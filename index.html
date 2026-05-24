@@ -9,11 +9,11 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Heebo', sans-serif; background: #f5f5f0; color: #1a1a1a; min-height: 100vh; padding: 2rem 1rem; }
-  .container { max-width: 640px; margin: 0 auto; }
+  .container { max-width: 720px; margin: 0 auto; }
   h1 { font-size: 22px; font-weight: 600; margin-bottom: 0.25rem; }
   .subtitle { font-size: 14px; color: #888; margin-bottom: 2rem; }
   .card { background: #fff; border: 0.5px solid #e0e0d8; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
-  .card-title { font-size: 12px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
+  .card-title { font-size: 12px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
   .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .row:last-child { margin-bottom: 0; }
   label { font-size: 14px; color: #666; min-width: 140px; }
@@ -27,7 +27,7 @@
   .amount-wrap input { flex: 1; }
   .currency { font-size: 14px; color: #999; }
 
-  /* toggle — גדול ובולט */
+  /* toggle */
   .toggle-group {
     display: flex; border: 0.5px solid #d0d0c8; border-radius: 10px;
     overflow: hidden; flex: 1;
@@ -39,6 +39,9 @@
   }
   .toggle-btn .sub { font-size: 12px; font-weight: 400; opacity: 0.75; display: block; margin-top: 2px; }
   .toggle-btn.active { background: #f0f0e8; color: #1a1a1a; }
+  
+  .toggle-small { border-radius: 6px; }
+  .toggle-small .toggle-btn { padding: 6px 12px; font-size: 13px; }
 
   .family-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .family-card { border: 0.5px solid #e0e0d8; border-radius: 10px; padding: 0.9rem; }
@@ -60,7 +63,7 @@
   .summary-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
   .stat { background: #fff; border: 0.5px solid #e0e0d8; border-radius: 10px; padding: 0.75rem 1rem; text-align: center; }
   .stat-label { font-size: 12px; color: #999; margin-bottom: 4px; }
-  .stat-value { font-size: 17px; font-weight: 500; color: #1a1a1a; }
+  .stat-value { font-size: 16px; font-weight: 500; color: #1a1a1a; }
 
   .results-card { background: #f5f5f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
   .results-title { font-size: 13px; font-weight: 500; color: #888; margin-bottom: 8px; }
@@ -71,14 +74,28 @@
   .r-detail { font-size: 11px; color: #aaa; margin-top: 2px; line-height: 1.5; }
   .amount-positive { font-size: 18px; font-weight: 500; color: #1d9e75; }
   .amount-negative { font-size: 18px; font-weight: 500; color: #d85a30; }
-  .subtotal { font-size: 11px; color: #aaa; margin-top: 2px; }
+  .subtotal { font-size: 11px; color: #aaa; margin-top: 2px; text-align: left; }
   .total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; margin-top: 8px; border-top: 0.5px solid #d0d0c8; }
   .total-label { font-size: 13px; font-weight: 500; color: #888; }
   .total-value { font-size: 20px; font-weight: 600; color: #1a1a1a; }
+  
+  /* לחצן שמירת תרחיש */
+  .scenario-actions { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+  .btn-action { flex: 1; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; padding: 12px; font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; text-align: center;}
+  .btn-action:hover { background: #333; }
+  
+  /* טבלת השוואה */
+  .table-responsive { width: 100%; overflow-x: auto; margin-top: 10px; }
+  .compare-table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; }
+  .compare-table th, .compare-table td { padding: 10px 12px; border-bottom: 0.5px solid #e0e0d8; white-space: nowrap; }
+  .compare-table th { background: #fafaf8; font-weight: 500; color: #666; }
+  .compare-table td.scen-val { text-align: left; font-weight: 500; }
+  .delete-scen { color: #d85a30; cursor: pointer; border: none; background: none; font-size: 12px; margin-right: 6px;}
+
   .footer { font-size: 11px; color: #bbb; text-align: center; margin-top: 1rem; }
   @media (max-width: 480px) {
     .family-grid { grid-template-columns: 1fr; }
-    .summary-bar { grid-template-columns: 1fr 1fr; }
+    .summary-bar { grid-template-columns: 1fr; gap: 6px; }
     label { min-width: 110px; }
   }
 </style>
@@ -88,11 +105,10 @@
   <h1>חלוקת כספים משפחתית</h1>
   <p class="subtitle">משפחת נ' ומשפחת א'</p>
 
-  <!-- סכום -->
   <div class="card">
     <div class="card-title">סכום לחלוקה</div>
     <div class="row">
-      <label>סך הכספים</label>
+      <label>סך הכספים הנוכחי</label>
       <div class="amount-wrap">
         <input type="number" id="totalAmount" value="5000000" min="0" step="10000" oninput="calculate()" />
         <span class="currency">₪</span>
@@ -100,7 +116,6 @@
     </div>
   </div>
 
-  <!-- חלוקה -->
   <div class="card">
     <div class="card-title">אופן חלוקה</div>
     <div class="toggle-group">
@@ -115,9 +130,8 @@
     </div>
   </div>
 
-  <!-- הצמדה -->
   <div class="card">
-    <div class="card-title">הצמדה למדד המחירים לצרכן</div>
+    <div class="card-title">הצמדה למדד המחירים לצרכן (של מאגר היסוד)</div>
     <div class="row">
       <label>הצמד למדד</label>
       <div class="toggle-group">
@@ -134,9 +148,14 @@
     </div>
   </div>
 
-  <!-- קיזוז -->
   <div class="card">
-    <div class="card-title">קיזוז סכומי עבר — מוצמד למדד</div>
+    <div class="card-title">
+      <span>איזון כספי עבר (מוצמד למדד)</span>
+      <div class="toggle-group toggle-small" style="max-width: 180px;">
+        <button class="toggle-btn active" onclick="setOffsetMode(true)" id="btn-offset-yes">עם קיזוז</button>
+        <button class="toggle-btn" onclick="setOffsetMode(false)" id="btn-offset-no">ללא קיזוז</button>
+      </div>
+    </div>
     <div class="family-grid">
       <div class="family-card">
         <div class="family-header">משפחת נ' <span class="badge badge-n">⅛ במצב ב'</span></div>
@@ -147,37 +166,53 @@
         <div id="members-a"></div>
       </div>
     </div>
-    <p style="font-size:12px;color:#aaa;margin-top:10px;">כל סכום מוצמד למדד משנת הקבלה עד המדד העדכני</p>
+    <p style="font-size:12px;color:#aaa;margin-top:10px;">במצב "עם קיזוז", כספי העבר מתווספים למאגר ומתחלקים מחדש. במצב "ללא קיזוז" הם מוצגים בלבד.</p>
   </div>
 
-  <!-- סיכום -->
   <div class="summary-bar">
     <div class="stat">
-      <div class="stat-label">סכום מקורי</div>
-      <div class="stat-value" id="stat-original">—</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">לאחר הצמדה</div>
+      <div class="stat-label">סכום יסוד מוצמד</div>
       <div class="stat-value" id="stat-indexed">—</div>
     </div>
     <div class="stat">
-      <div class="stat-label">שיעור הצמדה</div>
-      <div class="stat-value" id="stat-pct">—</div>
+      <div class="stat-label">סך תוספת כספי עבר</div>
+      <div class="stat-value" id="stat-past-total" style="color: #444;">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">מאגר סופי לחלוקה</div>
+      <div class="stat-value" id="stat-final-pool" style="font-weight: 600; color: #3c3489;">—</div>
     </div>
   </div>
 
-  <!-- תוצאות -->
   <div class="results-card">
-    <div class="results-title">תוצאות חלוקה</div>
+    <div class="results-title">תוצאות חלוקה נוכחית</div>
     <div id="results-list"></div>
+  </div>
+
+  <div class="card" style="border-color: #a0a0e0;">
+    <div class="card-title" style="color: #3c3489;">השוואת תרחישים ומודלים</div>
+    <div class="scenario-actions">
+      <button class="btn-action" onclick="saveScenario()">💾 שמור תרחיש נוכחי להשוואה</button>
+    </div>
+    <div id="scenarios-section" style="display:none;">
+      <div class="table-responsive">
+        <table class="compare-table" id="compare-table">
+          <thead>
+            <tr id="compare-header">
+              <th>שם / בן משפחה</th>
+            </tr>
+          </thead>
+          <tbody id="compare-body">
+            </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <p class="footer">נתוני מדד: הלמ"ס — בסיס ממוצע 2024=100 · עדכני לאפריל 2025</p>
 </div>
 
 <script>
-// מדד המחירים לצרכן — בסיס ממוצע 2024=100
-// ערך שנתי = ממוצע החודשים, משמש כבסיס לקיזוז עבר לפי שנה
 const CPI_MONTHLY = {
   '2010-01':65.2,'2011-01':67.8,'2012-01':70.1,'2013-01':71.5,'2014-01':72.3,
   '2015-01':71.8,'2016-01':71.5,'2017-01':71.9,'2018-01':72.8,'2019-01':73.6,
@@ -194,7 +229,6 @@ const CPI_MONTHLY = {
   '2025-01':101.3,'2025-02':101.5,'2025-03':101.7,'2025-04':102.8
 };
 
-// ממוצע שנתי משוער לשנים 2010–2019 (בסיס 2024=100)
 const CPI_YEAR_AVG = {
   2010:65.2, 2011:67.5, 2012:70.0, 2013:71.4, 2014:72.2,
   2015:71.7, 2016:71.4, 2017:71.8, 2018:72.7, 2019:73.5,
@@ -203,7 +237,6 @@ const CPI_YEAR_AVG = {
 
 const MONTHS_HE = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 
-// נתוני עבר: שם, שנת קבלה, סכום נומינלי
 const familyN = [
   { id:'gal',   name:'גל',   year:2015, nominalPast:300000  },
   { id:'shir',  name:'שיר',  year:2018, nominalPast:1000000 },
@@ -216,14 +249,15 @@ const familyA = [
   { id:'adi',  name:'עדי', year:2018, nominalPast:1000000 },
 ];
 
-let mode = 'equal', useIndex = false;
+let mode = 'equal', useIndex = false, applyOffset = true;
+let savedScenarios = [];
+let currentResultsMap = {}; // לשמירת חישובים מהירים לצורך השוואה
 
 function getLatestKey() { return Object.keys(CPI_MONTHLY).sort().pop(); }
 function getLatestVal() { return CPI_MONTHLY[getLatestKey()]; }
 
 function getCpiForYear(year) {
   if (CPI_YEAR_AVG[year]) return CPI_YEAR_AVG[year];
-  // חיפוש ינואר של אותה שנה
   const k = year + '-01';
   return CPI_MONTHLY[k] || null;
 }
@@ -265,12 +299,12 @@ function renderPastCards() {
         const base = getCpiForYear(m.year);
         const cur = getLatestVal();
         const pct = ((cur/base - 1)*100).toFixed(1);
-        detail = `<div class="member-indexed">נומינלי: ${fmt(m.nominalPast)} (${m.year}) · הצמדה: +${pct}%<br>מוצמד: ${fmt(idx)}</div>`;
+        detail = `<div class="member-indexed" style="${!applyOffset ? 'text-decoration: line-through; opacity: 0.5;' : ''}">נומינלי: ${fmt(m.nominalPast)} (${m.year}) · הצמדה: +${pct}%<br>מוצמד: ${fmt(idx)}</div>`;
       } else if (!m.nominalPast) {
-        detail = `<div class="member-indexed">אין קיזוז</div>`;
+        detail = `<div class="member-indexed">אין כספי עבר</div>`;
       }
       d.innerHTML = `
-        <div class="member-top">
+        <div class="member-top" style="${!applyOffset ? 'opacity: 0.6;' : ''}">
           <span class="member-name-label">${m.name}</span>
           <span class="past-amount">${m.nominalPast ? fmt(idx) : '—'}</span>
         </div>
@@ -296,18 +330,25 @@ function setIndex(v) {
   calculate();
 }
 
+function setOffsetMode(v) {
+  applyOffset = v;
+  document.getElementById('btn-offset-yes').className = 'toggle-btn' + (v ? ' active' : '');
+  document.getElementById('btn-offset-no').className = 'toggle-btn' + (!v ? ' active' : '');
+  calculate();
+}
+
 function calculate() {
   const total = parseFloat(document.getElementById('totalAmount').value) || 0;
-  let adjusted = total, pctChange = 0;
+  let baseIndexedPool = total;
 
   if (useIndex) {
     const bk = document.getElementById('baseMonth').value;
     const lk = getLatestKey();
     const bv = CPI_MONTHLY[bk], lv = CPI_MONTHLY[lk];
     if (bv && lv) {
-      adjusted = total * (lv / bv);
-      pctChange = ((lv / bv) - 1) * 100;
+      baseIndexedPool = total * (lv / bv);
       const [by,bm] = bk.split('-'), [ly,lm] = lk.split('-');
+      const pctChange = ((lv / bv) - 1) * 100;
       document.getElementById('index-info').innerHTML =
         `מדד <strong>${MONTHS_HE[parseInt(bm)-1]} ${by}</strong>: ${bv.toFixed(1)} נקודות<br>
          מדד <strong>${MONTHS_HE[parseInt(lm)-1]} ${ly}</strong> (עדכני): ${lv.toFixed(1)} נקודות<br>
@@ -315,17 +356,29 @@ function calculate() {
     }
   }
 
-  document.getElementById('stat-original').textContent = fmt(total);
-  document.getElementById('stat-indexed').textContent = fmt(adjusted);
-  document.getElementById('stat-pct').textContent = useIndex ? (pctChange >= 0 ? '+' : '') + pctChange.toFixed(1) + '%' : '—';
+  // חישוב סך כספי העבר המוצמדים
+  let totalPastFunds = 0;
+  if (applyOffset) {
+    [...familyN, ...familyA].forEach(m => {
+      totalPastFunds += indexedPast(m);
+    });
+  }
+
+  // המאגר המשותף הסופי לחלוקה
+  const finalDistributionPool = baseIndexedPool + totalPastFunds;
+
+  document.getElementById('stat-indexed').textContent = fmt(baseIndexedPool);
+  document.getElementById('stat-past-total').textContent = applyOffset ? fmt(totalPastFunds) : fmt(0);
+  document.getElementById('stat-final-pool').textContent = fmt(finalDistributionPool);
 
   renderPastCards();
 
   const list = document.getElementById('results-list');
   list.innerHTML = '';
+  currentResultsMap = {}; // איפוס מפת התוצאות לטובת מנגנון ההשוואה
 
-  function share(fam) {
-    return mode === 'equal' ? adjusted / 7 : (fam === 'n' ? adjusted / 8 : adjusted / 6);
+  function getShare(fam, pool) {
+    return mode === 'equal' ? pool / 7 : (fam === 'n' ? pool / 8 : pool / 6);
   }
 
   function renderGroup(members, fam, label, badgeClass) {
@@ -335,15 +388,18 @@ function calculate() {
     list.appendChild(gl);
 
     members.forEach(m => {
-      const base = share(fam);
-      const past = indexedPast(m);
-      const final = base - past;
+      const grossShare = getShare(fam, finalDistributionPool); 
+      const past = applyOffset ? indexedPast(m) : 0;
+      const finalNetShare = grossShare - past; // החלק היחסי פחות מה שכבר קיבל
+
+      // שמירה לצורך ההשוואות
+      currentResultsMap[m.id] = finalNetShare;
+
       const pctNum = mode === 'equal' ? (100/7) : (fam === 'n' ? 12.5 : 100/6);
       const pct = pctNum.toFixed(2).replace(/\.?0+$/, '');
 
-      let detailParts = [`${pct}% מהסכום`];
-      if (past > 0) detailParts.push(`קיזוז מוצמד: ${fmt(past)}`);
-      if (m.nominalPast && m.year) detailParts.push(`(נומינלי ${fmt(m.nominalPast)}, ${m.year})`);
+      let detailParts = [`${pct}% מהמאגר המוגדל`];
+      if (past > 0 && applyOffset) detailParts.push(`החזר/קיזוז עבר מוצמד: ${fmt(past)}`);
 
       const row = document.createElement('div');
       row.className = 'result-row';
@@ -353,8 +409,8 @@ function calculate() {
           <div class="r-detail">${detailParts.join(' · ')}</div>
         </div>
         <div style="text-align:left;">
-          <div class="${final >= 0 ? 'amount-positive' : 'amount-negative'}">${fmt(final)}</div>
-          ${past > 0 ? `<div class="subtotal">לפני קיזוז: ${fmt(base)}</div>` : ''}
+          <div class="${finalNetShare >= 0 ? 'amount-positive' : 'amount-negative'}">${fmt(finalNetShare)}</div>
+          ${past > 0 && applyOffset ? `<div class="subtotal">ברוטו לפני החזר: ${fmt(grossShare)}</div>` : ''}
         </div>
       `;
       list.appendChild(row);
@@ -364,19 +420,58 @@ function calculate() {
   renderGroup(familyN, 'n', "משפחת נ'", 'badge-n');
   renderGroup(familyA, 'a', "משפחת א'", 'badge-a');
 
-  const allTotal = [
-    ...familyN.map(m => share('n') - indexedPast(m)),
-    ...familyA.map(m => share('a') - indexedPast(m))
-  ].reduce((a,b) => a+b, 0);
+  // חישוב שורה תחתונה לבדיקת שלמות החלוקה
+  const sumOfDistributedMoney = [...familyN, ...familyA].map(m => {
+    const past = applyOffset ? indexedPast(m) : 0;
+    return getShare(m.id in familyN.reduce((acc, curr) => ({...acc, [curr.id]: true}), {}) ? 'n' : 'a', finalDistributionPool) - past;
+  }).reduce((a,b)=>a+b, 0);
 
   const tr = document.createElement('div');
   tr.className = 'total-row';
-  tr.innerHTML = `<span class="total-label">סה"כ לחלוקה (לאחר קיזוז)</span><span class="total-value">${fmt(allTotal)}</span>`;
+  // במודל החדש, סך כל חלוקת הנטו שווה בדיוק לסכום המקורי/המוצמד הקיים כרגע בקופה!
+  tr.innerHTML = `<span class="total-label">סה"כ לחלוקה בפועל (מתוך המאגר המקורי)</span><span class="total-value">${fmt(baseIndexedPool)}</span>`;
   list.appendChild(tr);
 }
 
-buildMonthSelect();
-calculate();
-</script>
-</body>
-</html>
+// פונקציות לניהול והשוואת תרחישים
+function saveScenario() {
+  const scenarioName = prompt("הזינו שם לתרחיש הנוכחי (לדוגמה: 'חלוקה שוויונית עם קיזוז', 'לפי משפחה בלי מדד'):");
+  if (!scenarioName) return;
+
+  const currentScenario = {
+    id: Date.now(),
+    name: scenarioName,
+    values: { ...currentResultsMap }
+  };
+
+  savedScenarios.push(currentScenario);
+  updateCompareTable();
+}
+
+function deleteScenario(id) {
+  savedScenarios = savedScenarios.filter(s => s.id !== id);
+  updateCompareTable();
+}
+
+function updateCompareTable() {
+  const section = document.getElementById('scenarios-section');
+  if (savedScenarios.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+
+  const headerRow = document.getElementById('compare-header');
+  const tbody = document.getElementById('compare-body');
+
+  // בניית כותרות הטבלה
+  headerRow.innerHTML = '<th>שם / בן משפחה</th>';
+  savedScenarios.forEach(s => {
+    const th = document.createElement('th');
+    th.innerHTML = `${s.name} <button class="delete-scen" onclick="deleteScenario(${s.id})">❌</button>`;
+    headerRow.appendChild(th);
+  });
+
+  // בניית שורות לפי האנשים
+  tbody.innerHTML = '';
+  const allMembers = [...familyN, ...familyA];
