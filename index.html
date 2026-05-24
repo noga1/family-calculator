@@ -5,217 +5,473 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>מחשבון חלוקת כספים משפחתי</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Heebo', sans-serif; background: #f5f5f0; color: #1a1a1a; min-height: 100vh; padding: 2rem 1rem; }
-  .container { max-width: 720px; margin: 0 auto; }
-  h1 { font-size: 22px; font-weight: 600; margin-bottom: 0.25rem; }
-  .subtitle { font-size: 14px; color: #888; margin-bottom: 2rem; }
-  .card { background: #fff; border: 0.5px solid #e0e0d8; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
-  .card-title { font-size: 12px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
-  .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .row:last-child { margin-bottom: 0; }
-  label { font-size: 14px; color: #666; min-width: 140px; }
+  body { font-family: 'Heebo', sans-serif; background: #fdfbf7; color: #333; min-height: 100vh; padding: 2rem 1rem; line-height: 1.5; }
+  .container { max-width: 800px; margin: 0 auto; }
+  
+  header { text-align: center; margin-bottom: 2rem; }
+  h1 { font-size: 28px; font-weight: 700; color: #4a6b5d; margin-bottom: 0.5rem; }
+  .subtitle { font-size: 15px; color: #7a8a82; }
+
+  .card { background: #fff; border: 2px solid #eef2f0; border-radius: 18px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(74,107,93,0.03); }
+  .card-title { font-size: 16px; font-weight: 600; color: #4a6b5d; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
+  
+  .form-group { margin-bottom: 1rem; }
+  label { font-size: 14px; font-weight: 500; color: #555; display: block; margin-bottom: 0.5rem; }
+  
   input[type=text], select {
-    border: 0.5px solid #d0d0c8; border-radius: 8px; padding: 8px 12px;
-    font-size: 14px; font-family: 'Heebo', sans-serif; background: #fafaf8;
-    color: #1a1a1a; outline: none; transition: border-color 0.15s; width: 100%;
+    border: 2px solid #e2e8e5; border-radius: 10px; padding: 10px 14px;
+    font-size: 15px; font-family: 'Heebo', sans-serif; background: #fafcfa;
+    color: #333; outline: none; transition: all 0.2s; width: 100%;
   }
-  input:focus, select:focus { border-color: #a0a0e0; background: #fff; }
-  .amount-wrap { display: flex; align-items: center; gap: 8px; flex: 1; }
-  .amount-wrap input { flex: 1; }
-  .currency { font-size: 14px; color: #999; }
-
-  /* toggle */
-  .toggle-group {
-    display: flex; border: 0.5px solid #d0d0c8; border-radius: 10px;
-    overflow: hidden; flex: 1;
-  }
-  .toggle-btn {
-    flex: 1; padding: 13px 10px; font-size: 15px; font-weight: 500;
-    font-family: 'Heebo', sans-serif; background: transparent; border: none;
-    cursor: pointer; color: #aaa; line-height: 1.4; transition: all 0.15s;
-  }
-  .toggle-btn .sub { font-size: 12px; font-weight: 400; opacity: 0.75; display: block; margin-top: 2px; }
-  .toggle-btn.active { background: #f0f0e8; color: #1a1a1a; }
+  input:focus, select:focus { border-color: #a3c2b5; background: #fff; box-shadow: 0 0 0 3px rgba(163,194,181,0.2); }
   
-  .toggle-small { border-radius: 6px; }
-  .toggle-small .toggle-btn { padding: 6px 12px; font-size: 13px; }
+  .amount-wrap { display: flex; align-items: center; gap: 10px; }
+  .currency { font-size: 16px; font-weight: 600; color: #8aa396; }
 
-  .family-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .family-card { border: 0.5px solid #e0e0d8; border-radius: 10px; padding: 0.9rem; }
-  .family-header { font-size: 12px; font-weight: 500; color: #888; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
-  .badge { font-size: 11px; padding: 2px 8px; border-radius: 6px; }
-  .badge-n { background: #e1f5ee; color: #0f6e56; }
-  .badge-a { background: #eeedfe; color: #3c3489; }
+  /* כפתורי בחירה דו-מצביים (Toggles) */
+  .toggle-group { display: flex; border: 2px solid #e2e8e5; border-radius: 12px; overflow: hidden; background: #fafcfa; margin-bottom: 0.5rem; }
+  .toggle-btn { flex: 1; padding: 12px; font-size: 15px; font-weight: 500; font-family: 'Heebo', sans-serif; background: transparent; border: none; cursor: pointer; color: #778880; transition: all 0.2s; text-align: center; }
+  .toggle-btn .subText { font-size: 12px; font-weight: 400; opacity: 0.8; display: block; margin-top: 2px; }
+  .toggle-btn.active { background: #e6f0ec; color: #2d4a3e; font-weight: 600; }
 
-  .member-row { display: flex; align-items: flex-start; flex-direction: column; padding: 8px 0; border-bottom: 0.5px solid #f0f0e8; }
-  .member-row:last-child { border-bottom: none; }
-  .member-top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
-  .member-name-label { font-size: 14px; color: #1a1a1a; }
-  .member-indexed { font-size: 11px; color: #aaa; margin-top: 3px; }
-  .past-amount { font-size: 13px; font-weight: 500; color: #444; }
+  /* גריד משפחות */
+  .family-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
+  .family-card { background: #fcfdfe; border: 1.5px dashed #dbe3e0; border-radius: 14px; padding: 1.25rem; }
+  .family-name-title { font-size: 15px; font-weight: 600; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .badge { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .badge-oof { background: #ffe9e9; color: #bc5a5a; }
+  .badge-salimi { background: #e3f2fd; color: #2b6cb0; }
 
-  .index-info { background: #f5f5f0; border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 13px; color: #666; line-height: 1.7; }
-  .index-info strong { color: #1a1a1a; font-weight: 500; }
-
-  .summary-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
-  .stat { background: #fff; border: 0.5px solid #e0e0d8; border-radius: 10px; padding: 0.75rem 1rem; text-align: center; }
-  .stat-label { font-size: 12px; color: #999; margin-bottom: 4px; }
-  .stat-value { font-size: 16px; font-weight: 500; color: #1a1a1a; }
-
-  .results-card { background: #f5f5f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
-  .results-title { font-size: 13px; font-weight: 500; color: #888; margin-bottom: 8px; }
-  .group-label { font-size: 11px; font-weight: 500; color: #aaa; letter-spacing: 0.05em; text-transform: uppercase; margin: 12px 0 4px; display: flex; align-items: center; gap: 6px; }
-  .result-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 0.5px solid #e8e8e0; }
-  .result-row:last-of-type { border-bottom: none; }
-  .r-name { font-size: 15px; color: #1a1a1a; }
-  .r-detail { font-size: 11px; color: #aaa; margin-top: 2px; line-height: 1.5; }
-  .amount-positive { font-size: 18px; font-weight: 500; color: #1d9e75; }
-  .amount-negative { font-size: 18px; font-weight: 500; color: #d85a30; }
-  .subtotal { font-size: 11px; color: #aaa; margin-top: 2px; text-align: left; }
-  .total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; margin-top: 8px; border-top: 0.5px solid #d0d0c8; }
-  .total-label { font-size: 13px; font-weight: 500; color: #888; }
-  .total-value { font-size: 20px; font-weight: 600; color: #1a1a1a; }
+  .member-box { background: #fff; border: 1px solid #eef2f0; border-radius: 10px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.01); }
+  .member-header { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; margin-bottom: 8px; color: #444; }
   
-  /* לחצן שמירת תרחיש */
-  .scenario-actions { display: flex; gap: 10px; margin-bottom: 1.5rem; }
-  .btn-action { flex: 1; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; padding: 12px; font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; text-align: center;}
-  .btn-action:hover { background: #333; }
+  .past-records-list { margin-bottom: 6px; }
+  .past-record-item { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-bottom: 4px; background: #f7faf8; padding: 4px 8px; border-radius: 6px; }
+  .past-record-item .rec-amount { font-weight: 500; color: #4a6b5d; }
+  .past-record-item .rec-year { color: #777; }
+  .past-record-item .rec-indexed { font-size: 11px; color: #9aa8a1; margin-right: auto; }
   
-  /* טבלת השוואה */
-  .table-responsive { width: 100%; overflow-x: auto; margin-top: 10px; }
-  .compare-table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; }
-  .compare-table th, .compare-table td { padding: 10px 12px; border-bottom: 0.5px solid #e0e0d8; white-space: nowrap; }
-  .compare-table th { background: #fafaf8; font-weight: 500; color: #666; }
-  .compare-table td.scen-val { text-align: left; font-weight: 500; }
-  .delete-scen { color: #d85a30; cursor: pointer; border: none; background: none; font-size: 12px; margin-right: 6px;}
+  .add-rec-form { display: flex; gap: 4px; margin-top: 6px; border-top: 1px dotted #e2e8e5; padding-top: 6px; }
+  .add-rec-form input { padding: 4px 8px; font-size: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-family: 'Heebo', sans-serif; }
+  .add-rec-form input[type=text] { flex: 2; }
+  .add-rec-form input[type=number] { flex: 1; }
+  .btn-add { background: #8aa396; color: #fff; border: none; padding: 4px 10px; font-size: 12px; border-radius: 6px; cursor: pointer; font-family: 'Heebo', sans-serif; }
+  .btn-add:hover { background: #718b7e; }
 
-  .footer { font-size: 11px; color: #bbb; text-align: center; margin-top: 1rem; }
-  @media (max-width: 480px) {
+  /* סיכום ביניים ומאגרים */
+  .pool-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
+  .pool-stat { background: #fff; border: 2px solid #eef2f0; padding: 1rem; border-radius: 14px; text-align: center; }
+  .pool-stat.highlight { background: #f0f7f4; border-color: #cbdcd5; }
+  .stat-lbl { font-size: 13px; color: #778880; margin-bottom: 4px; }
+  .stat-val { font-size: 18px; font-weight: 700; color: #333; }
+
+  /* כרטיס תוצאות סופי */
+  .results-card { background: #f0f7f4; border: 2px solid #cbdcd5; border-radius: 20px; padding: 1.5rem; }
+  .results-headline { font-size: 18px; font-weight: 700; color: #2d4a3e; margin-bottom: 1rem; border-bottom: 1px solid #cbdcd5; padding-bottom: 0.5rem; }
+  
+  .res-group-title { font-size: 13px; font-weight: 700; color: #718b7e; text-transform: uppercase; margin: 16px 0 8px 0; display: flex; align-items: center; gap: 6px; }
+  .res-row { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 12px 16px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #e1ebe7; }
+  .res-name { font-size: 16px; font-weight: 600; color: #333; }
+  .res-calc-details { font-size: 11px; color: #8aa396; margin-top: 2px; }
+  .res-values { text-align: left; }
+  .res-final-amount { font-size: 18px; font-weight: 700; color: #2d4a3e; }
+  .res-pct { font-size: 13px; color: #617d70; font-weight: 500; margin-top: 1px; }
+
+  .negative-alert { color: #c53030 !important; }
+
+  .footer { text-align: center; font-size: 12px; color: #a0aec0; margin-top: 2rem; padding-bottom: 2rem; }
+
+  @media (max-width: 600px) {
     .family-grid { grid-template-columns: 1fr; }
-    .summary-bar { grid-template-columns: 1fr; gap: 6px; }
-    label { min-width: 110px; }
+    .pool-summary { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
+
 <div class="container">
-  <h1>חלוקת כספים משפחתית</h1>
-  <p class="subtitle">משפחת נ' ומשפחת א'</p>
+  <header>
+    <h1>המחשבון המשפחתי 🕊️</h1>
+    <p class="subtitle">חישוב וחלוקת כספים בין משפחת עוף ומשפחת סלימי</p>
+  </header>
 
   <div class="card">
-    <div class="card-title">סכום לחלוקה</div>
-    <div class="row">
-      <label>סך הכספים הנוכחי</label>
+    <div class="card-title">💰 סך הסכום הנוכחי לחלוקה</div>
+    <div class="form-group">
       <div class="amount-wrap">
-        <input type="text" id="totalAmount" value="5,000,000" oninput="handleAmountInput(this)" />
+        <input type="text" id="mainAmountInput" value="5,000,000" oninput="handleMainAmountInput(this)" />
         <span class="currency">₪</span>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">אופן חלוקה</div>
+    <div class="card-title">⚙️ הגדרות ומודל החלוקה</div>
+    
+    <label>שיטת חלוקת היסוד:</label>
     <div class="toggle-group">
-      <button class="toggle-btn active" onclick="setMode('equal')" id="btn-equal">
-        חלוקה שוויונית
-        <span class="sub">⅐ שווה לכל אחד מ-7 האנשים</span>
+      <button class="toggle-btn active" id="mode-equal" onclick="setDistributionMode('equal')">
+        לפי נכדים (שוויונית)
+        <span class="subText">⅐ לכל אחד מ-7 הנכדים</span>
       </button>
-      <button class="toggle-btn" onclick="setMode('weighted')" id="btn-weighted">
-        חלוקה לפי משפחה
-        <span class="sub">⅛ למשפחת נ' · ⅙ למשפחת א'</span>
+      <button class="toggle-btn" id="mode-weighted" onclick="setDistributionMode('weighted')">
+        לפי משפחות
+        <span class="subText">⅛ למשפחת עוף · ⅙ למשפחת סלימי</span>
       </button>
+    </div>
+
+    <label style="margin-top: 1.25rem;">הצמדה למדד המחירים לצרכן:</label>
+    <div class="toggle-group">
+      <button class="toggle-btn" id="index-yes" onclick="setIndexMode(true)">כן, הצמד כספי עבר למדד</button>
+      <button class="toggle-btn active" id="index-no" onclick="setIndexMode(false)">לא, חשב לפי ערך נומינלי</button>
+    </div>
+
+    <label style="margin-top: 1.25rem;">איזון יורשים (קיזוז נכסי עבר):</label>
+    <div class="toggle-group">
+      <button class="toggle-btn active" id="balance-yes" onclick="setBalanceMode(true)">כן, בצע איזון וקיזוז נטו</button>
+      <button class="toggle-btn" id="balance-no" onclick="setBalanceMode(false)">לא, חלוקה ישירה ללא התחשבות בעבר</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">הצמדה למדד המחירים לצרכן (של מאגר היסוד)</div>
-    <div class="row">
-      <label>הצמד למדד</label>
-      <div class="toggle-group">
-        <button class="toggle-btn active" onclick="setIndex(false)" id="btn-no-index">ללא הצמדה</button>
-        <button class="toggle-btn" onclick="setIndex(true)" id="btn-yes-index">עם הצמדה</button>
-      </div>
-    </div>
-    <div id="index-section" style="display:none; margin-top:12px;">
-      <div class="row">
-        <label>תאריך קבלת הכסף</label>
-        <select id="baseMonth" onchange="calculate()"></select>
-      </div>
-      <div id="index-info" class="index-info"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">
-      <span>איזון כספי עבר (מוצמד למדד)</span>
-      <div class="toggle-group toggle-small" style="max-width: 180px;">
-        <button class="toggle-btn active" onclick="setOffsetMode(true)" id="btn-offset-yes">עם קיזוז</button>
-        <button class="toggle-btn" onclick="setOffsetMode(false)" id="btn-offset-no">ללא קיזוז</button>
-      </div>
-    </div>
+    <div class="card-title">📊 כספים שהתקבלו בעבר</div>
+    <p style="font-size: 13px; color: #718b7e; margin-bottom: 1rem;">ניתן לראות את כספי העבר של כל אחד ואף להוסיף שורות נוספות במידת הצורך:</p>
+    
     <div class="family-grid">
       <div class="family-card">
-        <div class="family-header">משפחת נ' <span class="badge badge-n">⅛ במצב ב'</span></div>
-        <div id="members-n"></div>
+        <div class="family-name-title">
+          <span>משפחת עוף</span>
+          <span class="badge badge-oof">בני משפחה: 4</span>
+        </div>
+        <div id="members-oof-container"></div>
       </div>
+
       <div class="family-card">
-        <div class="family-header">משפחת א' <span class="badge badge-a">⅙ במצב ב'</span></div>
-        <div id="members-a"></div>
+        <div class="family-name-title">
+          <span>משפחת סלימי</span>
+          <span class="badge badge-salimi">בני משפחה: 3</span>
+        </div>
+        <div id="members-salimi-container"></div>
       </div>
     </div>
-    <p style="font-size:12px;color:#aaa;margin-top:10px;">במצב "עם קיזוז", כספי העבר מתותווספים למאגר ומתחלקים מחדש. במצב "ללא קיזוז" הם מוצגים בלבד.</p>
   </div>
 
-  <div class="summary-bar">
-    <div class="stat">
-      <div class="stat-label">סכום יסוד מוצמד</div>
-      <div class="stat-value" id="stat-indexed">—</div>
+  <div class="pool-summary">
+    <div class="pool-stat">
+      <div class="stat-lbl">סך כספי עבר להחזרה (רעיונית)</div>
+      <div class="stat-val" id="summary-past-total">₪0</div>
     </div>
-    <div class="stat">
-      <div class="stat-label">סך תוספת כספי עבר</div>
-      <div class="stat-value" id="stat-past-total" style="color: #444;">—</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">מאגר סופי לחלוקה</div>
-      <div class="stat-value" id="stat-final-pool" style="font-weight: 600; color: #3c3489;">—</div>
+    <div class="pool-stat highlight">
+      <div class="stat-lbl">מאגר משולב סופי לחלוקה</div>
+      <div class="stat-val" id="summary-combined-pool">₪5,000,000</div>
     </div>
   </div>
 
   <div class="results-card">
-    <div class="results-title">תוצאות חלוקה נוכחית</div>
-    <div id="results-list"></div>
+    <div class="results-headline">✨ שורה תחתונה: סכומים לקבלה בפועל</div>
+    <div id="final-results-container"></div>
   </div>
 
-  <div class="card" style="border-color: #a0a0e0;">
-    <div class="card-title" style="color: #3c3489;">השוואת תרחישים ומודלים</div>
-    <div class="scenario-actions">
-      <button class="btn-action" onclick="saveScenario()">💾 שמור תרחיש נוכחי להשוואה</button>
-    </div>
-    <div id="scenarios-section" style="display:none;">
-      <div class="table-responsive">
-        <table class="compare-table" id="compare-table">
-          <thead>
-            <tr id="compare-header">
-              <th>שם / בן משפחה</th>
-            </tr>
-          </thead>
-          <tbody id="compare-body">
-            </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <p class="footer">נתוני מדד: הלמ"ס — בסיס ממוצע 2024=100 · עדכני לאפריל 2025</p>
+  <footer class="footer">
+    <p>מחשבון חלוקה משפחתי · נתוני מדד בסיס ממוצע 2024=100 (מעודכן לאפריל 2025)</p>
+  </footer>
 </div>
 
 <script>
-const CPI_MONTHLY = {
-  '2010-01':65.2,'2011-01':67.8,'2012-01':70.1,'2013-01':71.5,'2014-01':72.3,
-  '2015-01':71.8,'2016-01':71.5,'2017-01':71.9,'2018-01':72.8,'2019-01':73.6,
-  '2020-01':88.1,'2020-02':87.9,'2020-03':87.7,'2020-04':87.3,'2020-05':87.1,'2020-06':87.2,
-  '2020-07':87.5,'2020-08':87.7,'2020-09':87.9,'2020-10':87.6,'2020-11':87.4,'2020-12':87.6,
-  '2021-01':87.9,'2021-02':88.1,'2021-03':88.5,'2021-04':89.3,'2021-05':89.6,'2021-06':90
+// נתוני מדד המחירים לצרכן ההיסטוריים (לפי ממוצע שנתי / ינואר של אותה שנה, מעודכן לאפריל 2025 שעומד על 102.8)
+const CPI_DATA = {
+  2010: 65.2,
+  2015: 71.7,
+  2016: 71.4,
+  2018: 72.7,
+  2019: 73.5,
+  2020: 87.6,
+  2021: 90.2,
+  2022: 96.5,
+  2023: 99.2,
+  2024: 100.0,
+  2025: 102.8
+};
+const LATEST_CPI = 102.8;
+
+// מבנה הנתונים הראשי של בני המשפחה
+let familyData = {
+  oof: [
+    { id: 'sivan', name: 'סיון', past: [] },
+    { id: 'gal', name: 'גל', past: [{ amount: 300000, year: 2015 }] },
+    { id: 'noga', name: 'נוגה', past: [{ amount: 750000, year: 2019 }] },
+    { id: 'shir', name: 'שיר', past: [{ amount: 1000000, year: 2018 }] }
+  ],
+  salimi: [
+    { id: 'eyal', name: 'איל', past: [{ amount: 500000, year: 2016 }] },
+    { id: 'yael', name: 'יעל', past: [{ amount: 300000, year: 2010 }] },
+    { id: 'adi', name: 'עדי', past: [] }
+  ]
+};
+
+// משתני מצב של האפשרויות במחשבון
+let currentDistributionMode = 'equal'; // או 'weighted'
+let currentIndexMode = false;
+let currentBalanceMode = true;
+
+// פונקציות עיצוב מספרים עם פסיקים
+function formatNumber(num) {
+  return Math.round(num).toLocaleString('he-IL');
+}
+
+function parseFormattedNumber(str) {
+  return parseFloat(str.replace(/,/g, '')) || 0;
+}
+
+function handleMainAmountInput(input) {
+  let cursorPosition = input.selectionStart;
+  let originalLength = input.value.length;
+  let cleanValue = input.value.replace(/[^0-9]/g, '');
+  
+  if (cleanValue === '') {
+    input.value = '';
+    calculateAll();
+    return;
+  }
+  
+  let formatted = parseInt(cleanValue, 10).toLocaleString('he-IL');
+  input.value = formatted;
+  
+  // שמירה על מיקום הסמן
+  input.selectionStart = input.selectionEnd = cursorPosition + (formatted.length - originalLength);
+  calculateAll();
+}
+
+// פונקציה חיה המפרמטת גם את שדות הוספת הסכומים הקטנים
+function formatLiveInput(input) {
+  let clean = input.value.replace(/[^0-9]/g, '');
+  if(clean) {
+    input.value = parseInt(clean, 10).toLocaleString('he-IL');
+  }
+}
+
+// פונקציות לשינוי מצבי הבחירה (Toggles)
+function setDistributionMode(mode) {
+  currentDistributionMode = mode;
+  document.getElementById('mode-equal').classList.toggle('active', mode === 'equal');
+  document.getElementById('mode-weighted').classList.toggle('active', mode === 'weighted');
+  calculateAll();
+}
+
+function setIndexMode(isIndexed) {
+  currentIndexMode = isIndexed;
+  document.getElementById('index-yes').classList.toggle('active', isIndexed === true);
+  document.getElementById('index-no').classList.toggle('active', isIndexed === false);
+  calculateAll();
+}
+
+function setBalanceMode(isBalanced) {
+  currentBalanceMode = isBalanced;
+  document.getElementById('balance-yes').classList.toggle('active', isBalanced === true);
+  document.getElementById('balance-no').classList.toggle('active', isBalanced === false);
+  calculateAll();
+}
+
+// חישוב ערך מוצמד של פריט כסף בודד
+function getEffectiveAmount(pastItem) {
+  if (!currentIndexMode) return pastItem.amount;
+  let baseCpi = CPI_DATA[pastItem.year] || LATEST_CPI;
+  return pastItem.amount * (LATEST_CPI / baseCpi);
+}
+
+// הוספת שורת כסף עבר חדשה לבן משפחה
+function addPastRecord(famKey, memberId) {
+  const amInput = document.getElementById(`add-amount-${memberId}`);
+  const yrInput = document.getElementById(`add-year-${memberId}`);
+  
+  const amount = parseFormattedNumber(amInput.value);
+  const year = parseInt(yrInput.value);
+  
+  if (!amount || !year || year < 2000 || year > 2026) {
+    alert("אנא הזן סכום תקין ושנה הגיונית (בין 2000 ל-2026)");
+    return;
+  }
+  
+  let member = familyData[famKey].find(m => m.id === memberId);
+  if (member) {
+    member.past.push({ amount: amount, year: year });
+    amInput.value = '';
+    calculateAll();
+  }
+}
+
+// בנייה ורינדור של כרטיסי כספי העבר על המסך
+function renderFamilyInputs() {
+  ['oof', 'salimi'].forEach(famKey => {
+    const container = document.getElementById(`members-${famKey}-container`);
+    container.innerHTML = '';
+    
+    familyData[famKey].forEach(member => {
+      let html = `<div class="member-box">`;
+      html += `<div class="member-header"><span>${member.name}</span></div>`;
+      html += `<div class="past-records-list">`;
+      
+      if (member.past.length === 0) {
+        html += `<div style="font-size: 12px; color: #aaa; font-style: italic;">אין כספי עבר מוזנים</div>`;
+      } else {
+        member.past.forEach(item => {
+          let effective = getEffectiveAmount(item);
+          let indexText = "";
+          if (currentIndexMode) {
+            let change = (((LATEST_CPI / (CPI_DATA[item.year] || LATEST_CPI)) - 1) * 100).toFixed(1);
+            indexText = `<span class="rec-indexed">(מוצמד: ₪${formatNumber(effective)} / +${change}%)</span>`;
+          }
+          html += `
+            <div class="past-record-item">
+              <span class="rec-amount">₪${formatNumber(item.amount)}</span>
+              <span class="rec-year">שנת ${item.year}</span>
+              ${indexText}
+            </div>`;
+        });
+      }
+      
+      html += `</div>`; // סגירת רשימה
+      
+      // טופס הוספה קטן
+      html += `
+        <div class="add-rec-form">
+          <input type="text" id="add-amount-${member.id}" placeholder="סכום בש״ח" oninput="formatLiveInput(this)">
+          <select id="add-year-${member.id}">
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+            <option value="2019">2019</option>
+            <option value="2018">2018</option>
+            <option value="2017">2017</option>
+            <option value="2016">2016</option>
+            <option value="2015">2015</option>
+            <option value="2010">2010</option>
+          </select>
+          <button class="btn-add" onclick="addPastRecord('${famKey}', '${member.id}')">הוסף</button>
+        </div>
+      `;
+      
+      html += `</div>`; // סגירת קופסת חבר
+      container.innerHTML += html;
+    });
+  });
+}
+
+// פונקציית החישוב הראשית והצגת הפלט
+function calculateAll() {
+  const currentTotalAvailable = parseFormattedNumber(document.getElementById('mainAmountInput').value);
+  
+  // 1. חישוב סך כספי העבר (הנומינליים או המוצמדים בהתאם למצב)
+  let globalPastSum = 0;
+  let memberPastSumsMap = {};
+  
+  ['oof', 'salimi'].forEach(famKey => {
+    familyData[famKey].forEach(member => {
+      let totalForMember = 0;
+      member.past.forEach(item => {
+        totalForMember += getEffectiveAmount(item);
+      });
+      memberPastSumsMap[member.id] = totalForMember;
+      globalPastSum += totalForMember;
+    });
+  });
+
+  // עדכון ריבוע הסטטיסטיקה שמתחת להגדרות
+  document.getElementById('summary-past-total').textContent = currentBalanceMode ? `₪${formatNumber(globalPastSum)}` : "₪0 (מנוטרל)";
+  
+  // 2. קביעת גודל המאגר הסופי לחלוקה
+  // במידה ואיזון יורשים פועל -> המאגר גדל בכספי העבר. אם לא -> נשאר בדיוק סכום הקופה המקורי.
+  let combinedPool = currentTotalAvailable;
+  if (currentBalanceMode) {
+    combinedPool += globalPastSum;
+  }
+  document.getElementById('summary-combined-pool').textContent = `₪${formatNumber(combinedPool)}`;
+
+  // תמיד נרנדר מחדש את כרטיסי כספי העבר כדי לשקף הצמדות אם השתנו
+  renderFamilyInputs();
+
+  // 3. חישוב החלק של כל אדם ורינדור תוצאות סופיות
+  const resultsContainer = document.getElementById('final-results-container');
+  resultsContainer.innerHTML = '';
+
+  const familiesConfig = [
+    { key: 'oof', name: "משפחת עוף", class: 'badge-oof' },
+    { key: 'salimi', name: "משפחת סלימי", class: 'badge-salimi' }
+  ];
+
+  familiesConfig.forEach(fam => {
+    let groupTitle = document.createElement('div');
+    groupTitle.className = 'res-group-title';
+    groupTitle.innerHTML = `<span class="badge ${fam.class}">${fam.name}</span>`;
+    resultsContainer.appendChild(groupTitle);
+
+    familyData[fam.key].forEach(member => {
+      // אחוז וחלוקה ברוטו מהמאגר
+      let grossAmount = 0;
+      let distributionDescription = "";
+      
+      if (currentDistributionMode === 'equal') {
+        grossAmount = combinedPool / 7; // שביעית לכל נכד
+        distributionDescription = "⅐ מהמאגר";
+      } else {
+        if (fam.key === 'oof') {
+          grossAmount = combinedPool / 8; // שמינית למשפחת עוף
+          distributionDescription = "⅛ מהמאגר";
+        } else {
+          grossAmount = combinedPool / 6; // שישית למשפחת סלימי
+          distributionDescription = "⅙ מהמאגר";
+        }
+      }
+
+      // חישוב הנטו לקבלה בפועל בקופה הנוכחית
+      let netAmount = grossAmount;
+      if (currentBalanceMode) {
+        // מופחת סך כספי העבר שלו (המוחזרים למאגר)
+        netAmount = grossAmount - (memberPastSumsMap[member.id] || 0);
+      }
+
+      // חישוב אחוז מתוך סך הכספים הנוכחי בקופה (זה שהוגדר למעלה, ברירת מחדל 5 מיליון)
+      let pctFromCurrentPool = 0;
+      if (currentTotalAvailable > 0) {
+        pctFromCurrentPool = (netAmount / currentTotalAvailable) * 100;
+      }
+
+      let row = document.createElement('div');
+      row.className = 'res-row';
+      
+      let detailString = `${distributionDescription}`;
+      if (currentBalanceMode && (memberPastSumsMap[member.id] || 0) > 0) {
+        detailString += ` · לאחר קיזוז עבר בסך ₪${formatNumber(memberPastSumsMap[member.id])}`;
+      }
+
+      let isNegative = netAmount < 0;
+
+      row.innerHTML = `
+        <div>
+          <div class="res-name">${member.name}</div>
+          <div class="res-calc-details">${detailString}</div>
+        </div>
+        <div class="res-values">
+          <div class="res-final-amount ${isNegative ? 'negative-alert' : ''}">
+            ${isNegative ? 'החזר חוב למאגר: ' : ''}₪${formatNumber(Math.abs(netAmount))}
+          </div>
+          <div class="res-pct">${pctFromCurrentPool.toFixed(2)}% מסך הקופה הנוכחית</div>
+        </div>
+      `;
+      resultsContainer.appendChild(row);
+    });
+  });
+}
+
+// הרצה ראשונית עם טעינת הדף
+calculateAll();
+</script>
+
+</body>
+</html>
