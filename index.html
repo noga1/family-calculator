@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>מחשבון חלוקת כספים משפחתי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: #f5f5f0;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 640px; margin: 0 auto; }
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #1a1a1a;
+  }
+  .subtitle { font-size: 14px; color: #888; margin-bottom: 2rem; }
+  .card {
+    background: #fff;
+    border: 0.5px solid #e0e0d8;
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .card-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 1rem;
+  }
+  .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .row:last-child { margin-bottom: 0; }
+  label { font-size: 14px; color: #666; min-width: 140px; }
+  input[type=number], input[type=text], select {
+    border: 0.5px solid #d0d0c8;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: 'Heebo', sans-serif;
+    background: #fafaf8;
+    color: #1a1a1a;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  input:focus, select:focus { border-color: #a0a0e0; background: #fff; }
+  .amount-wrap { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .amount-wrap input { flex: 1; }
+  .currency { font-size: 14px; color: #999; }
+  .toggle-group {
+    display: flex;
+    border: 0.5px solid #d0d0c8;
+    border-radius: 8px;
+    overflow: hidden;
+    flex: 1;
+  }
+  .toggle-btn {
+    flex: 1;
+    padding: 9px 8px;
+    font-size: 13px;
+    font-family: 'Heebo', sans-serif;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    line-height: 1.4;
+    transition: all 0.15s;
+  }
+  .toggle-btn.active {
+    background: #f0f0e8;
+    color: #1a1a1a;
+    font-weight: 500;
+  }
+  .family-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .family-card {
+    border: 0.5px solid #e0e0d8;
+    border-radius: 10px;
+    padding: 0.9rem;
+  }
+  .family-header {
+    font-size: 12px;
+    font-weight: 500;
+    color: #888;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+  .badge-n { background: #e1f5ee; color: #0f6e56; }
+  .badge-a { background: #eeedfe; color: #3c3489; }
+  .member-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 0.5px solid #f0f0e8;
+    font-size: 14px;
+    color: #1a1a1a;
+  }
+  .member-row:last-child { border-bottom: none; }
+  .past-input { width: 80px !important; font-size: 13px !important; text-align: left; }
+  .index-info {
+    background: #f5f5f0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.7;
+  }
+  .index-info strong { color: #1a1a1a; font-weight: 500; }
+  .summary-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+  .stat {
+    background: #fff;
+    border: 0.5px solid #e0e0d8;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+  }
+  .stat-label { font-size: 12px; color: #999; margin-bottom: 4px; }
+  .stat-value { font-size: 18px; font-weight: 500; color: #1a1a1a; }
+  .results-card {
+    background: #f5f5f0;
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .results-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  .group-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #aaa;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin: 12px 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 0.5px solid #e8e8e0;
+  }
+  .result-row:last-of-type { border-bottom: none; }
+  .member-name { font-size: 15px; color: #1a1a1a; }
+  .member-detail { font-size: 12px; color: #aaa; margin-top: 2px; }
+  .amount-positive { font-size: 18px; font-weight: 500; color: #1d9e75; }
+  .amount-negative { font-size: 18px; font-weight: 500; color: #d85a30; }
+  .subtotal { font-size: 12px; color: #aaa; }
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    margin-top: 8px;
+    border-top: 0.5px solid #d0d0c8;
+  }
+  .total-label { font-size: 13px; font-weight: 500; color: #888; }
+  .total-value { font-size: 20px; font-weight: 600; color: #1a1a1a; }
+  @media (max-width: 480px) {
+    .family-grid { grid-template-columns: 1fr; }
+    .summary-bar { grid-template-columns: 1fr 1fr; }
+    label { min-width: 110px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>חלוקת כספים משפחתית</h1>
+  <p class="subtitle">משפחת נ' ומשפחת א'</p>
+
+  <div class="card">
+    <div class="card-title">סכום לחלוקה</div>
+    <div class="row">
+      <label>סך הכספים</label>
+      <div class="amount-wrap">
+        <input type="number" id="totalAmount" value="100000" min="0" step="1000" oninput="calculate()" />
+        <span class="currency">₪</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">אופן חלוקה</div>
+    <div class="toggle-group">
+      <button class="toggle-btn active" onclick="setMode('equal')" id="btn-equal">
+        חלוקה שוויונית<br><span style="font-size:11px;opacity:0.7;">⅐ לכל אחד</span>
+      </button>
+      <button class="toggle-btn" onclick="setMode('weighted')" id="btn-weighted">
+        חלוקה לפי משפחה<br><span style="font-size:11px;opacity:0.7;">⅛ משפחת נ' · ⅙ משפחת א'</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">הצמדה למדד המחירים לצרכן</div>
+    <div class="row">
+      <label>הצמד למדד</label>
+      <div class="toggle-group">
+        <button class="toggle-btn active" onclick="setIndex(false)" id="btn-no-index">ללא הצמדה</button>
+        <button class="toggle-btn" onclick="setIndex(true)" id="btn-yes-index">עם הצמדה</button>
+      </div>
+    </div>
+    <div id="index-section" style="display:none; margin-top:12px;">
+      <div class="row">
+        <label>תאריך קבלת הכסף</label>
+        <select id="baseMonth" onchange="calculate()"></select>
+      </div>
+      <div id="index-info" class="index-info"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">קיזוז סכומי עבר</div>
+    <div class="family-grid">
+      <div class="family-card">
+        <div class="family-header">משפחת נ' <span class="badge badge-n">⅛ במצב ב'</span></div>
+        <div id="members-n"></div>
+      </div>
+      <div class="family-card">
+        <div class="family-header">משפחת א' <span class="badge badge-a">⅙ במצב ב'</span></div>
+        <div id="members-a"></div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:#aaa;margin-top:10px;">הזן סכומים שכבר שולמו — יקוזזו מהחלק של כל אחד</p>
+  </div>
+
+  <div class="summary-bar">
+    <div class="stat">
+      <div class="stat-label">סכום מקורי</div>
+      <div class="stat-value" id="stat-original">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">לאחר הצמדה</div>
+      <div class="stat-value" id="stat-indexed">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">שיעור הצמדה</div>
+      <div class="stat-value" id="stat-pct">—</div>
+    </div>
+  </div>
+
+  <div class="results-card">
+    <div class="results-title">תוצאות חלוקה</div>
+    <div id="results-list"></div>
+  </div>
+
+  <p style="font-size:11px;color:#bbb;text-align:center;margin-top:1rem;">נתוני מדד: הלמ"ס — בסיס ממוצע 2024=100 · עדכני לאפריל 2025</p>
+</div>
+
+<script>
+const CPI = {
+  '2020-01':88.1,'2020-02':87.9,'2020-03':87.7,'2020-04':87.3,'2020-05':87.1,'2020-06':87.2,
+  '2020-07':87.5,'2020-08':87.7,'2020-09':87.9,'2020-10':87.6,'2020-11':87.4,'2020-12':87.6,
+  '2021-01':87.9,'2021-02':88.1,'2021-03':88.5,'2021-04':89.3,'2021-05':89.6,'2021-06':90.1,
+  '2021-07':90.5,'2021-08':90.8,'2021-09':91.2,'2021-10':91.6,'2021-11':92.0,'2021-12':92.5,
+  '2022-01':93.1,'2022-02':93.5,'2022-03':94.3,'2022-04':96.0,'2022-05':96.7,'2022-06':97.2,
+  '2022-07':97.4,'2022-08':97.5,'2022-09':97.8,'2022-10':97.9,'2022-11':97.8,'2022-12':97.9,
+  '2023-01':98.1,'2023-02':98.5,'2023-03':99.3,'2023-04':99.2,'2023-05':99.3,'2023-06':99.2,
+  '2023-07':99.3,'2023-08':99.6,'2023-09':100.0,'2023-10':99.5,'2023-11':99.2,'2023-12':99.1,
+  '2024-01':97.9,'2024-02':98.2,'2024-03':98.8,'2024-04':99.5,'2024-05':99.7,'2024-06':99.8,
+  '2024-07':99.9,'2024-08':100.4,'2024-09':100.4,'2024-10':100.5,'2024-11':101.1,'2024-12':101.2,
+  '2025-01':101.3,'2025-02':101.5,'2025-03':101.7,'2025-04':102.8
+};
+const MONTHS_HE = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const familyN = [{id:'sivan',name:'סיון',past:0},{id:'gal',name:'גל',past:0},{id:'noga',name:'נוגה',past:0},{id:'shir',name:'שיר',past:0}];
+const familyA = [{id:'eyal',name:'איל',past:0},{id:'yael',name:'יעל',past:0},{id:'adi',name:'עדי',past:0}];
+let mode = 'equal', useIndex = false;
+
+function buildMonthSelect() {
+  const sel = document.getElementById('baseMonth');
+  Object.keys(CPI).sort().reverse().forEach(k => {
+    const [y,m] = k.split('-');
+    const opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = MONTHS_HE[parseInt(m)-1] + ' ' + y;
+    sel.appendChild(opt);
+  });
+  sel.value = '2024-01';
+}
+
+function fmt(n) { return '₪' + Math.round(n).toLocaleString('he-IL'); }
+function getLatest() { return Object.keys(CPI).sort().pop(); }
+
+function renderPastInputs() {
+  [['n',familyN],['a',familyA]].forEach(([fam,list]) => {
+    const el = document.getElementById('members-'+fam);
+    el.innerHTML = '';
+    list.forEach(m => {
+      const d = document.createElement('div');
+      d.className = 'member-row';
+      d.innerHTML = `<span>${m.name}</span><input class="past-input" type="number" value="${m.past||''}" placeholder="0" step="100" oninput="updatePast('${fam}','${m.id}',this.value)" />`;
+      el.appendChild(d);
+    });
+  });
+}
+
+function updatePast(fam,id,val) {
+  const list = fam==='n'?familyN:familyA;
+  const m = list.find(x=>x.id===id);
+  if(m){m.past=parseFloat(val)||0;calculate();}
+}
+
+function setMode(m) {
+  mode=m;
+  document.getElementById('btn-equal').className='toggle-btn'+(m==='equal'?' active':'');
+  document.getElementById('btn-weighted').className='toggle-btn'+(m==='weighted'?' active':'');
+  calculate();
+}
+
+function setIndex(v) {
+  useIndex=v;
+  document.getElementById('btn-no-index').className='toggle-btn'+(!v?' active':'');
+  document.getElementById('btn-yes-index').className='toggle-btn'+(v?' active':'');
+  document.getElementById('index-section').style.display=v?'':'none';
+  calculate();
+}
+
+function calculate() {
+  const total = parseFloat(document.getElementById('totalAmount').value)||0;
+  let adjusted = total, pctChange = 0;
+  if(useIndex) {
+    const bk = document.getElementById('baseMonth').value;
+    const lk = getLatest();
+    const bv = CPI[bk], lv = CPI[lk];
+    if(bv&&lv) {
+      adjusted = total*(lv/bv);
+      pctChange = ((lv/bv)-1)*100;
+      const [by,bm]=bk.split('-'), [ly,lm]=lk.split('-');
+      document.getElementById('index-info').innerHTML =
+        `מדד <strong>${MONTHS_HE[parseInt(bm)-1]} ${by}</strong>: ${bv.toFixed(1)} נקודות<br>
+         מדד <strong>${MONTHS_HE[parseInt(lm)-1]} ${ly}</strong> (עדכני): ${lv.toFixed(1)} נקודות<br>
+         שיעור הצמדה: <strong>${pctChange>=0?'+':''}${pctChange.toFixed(2)}%</strong>`;
+    }
+  }
+  document.getElementById('stat-original').textContent = fmt(total);
+  document.getElementById('stat-indexed').textContent = fmt(adjusted);
+  document.getElementById('stat-pct').textContent = useIndex?(pctChange>=0?'+':'')+pctChange.toFixed(1)+'%':'—';
+
+  const list = document.getElementById('results-list');
+  list.innerHTML='';
+
+  function share(fam){return mode==='equal'?adjusted/7:(fam==='n'?adjusted/8:adjusted/6);}
+
+  function renderGroup(members,fam,label,badgeClass){
+    const gl=document.createElement('div');
+    gl.className='group-label';
+    gl.innerHTML=`<span class="badge ${badgeClass}">${label}</span>`;
+    list.appendChild(gl);
+    members.forEach(m=>{
+      const base=share(fam), final=base-(m.past||0);
+      const pct=(mode==='equal'?(100/7):(fam==='n'?12.5:100/6)).toFixed(2).replace(/\.?0+$/,'');
+      const row=document.createElement('div');
+      row.className='result-row';
+      row.innerHTML=`
+        <div>
+          <div class="member-name">${m.name}</div>
+          <div class="member-detail">${pct}%${m.past?' · קיזוז '+fmt(m.past):''}</div>
+        </div>
+        <div style="text-align:left;">
+          <div class="${final>=0?'amount-positive':'amount-negative'}">${fmt(final)}</div>
+          ${m.past?`<div class="subtotal">לפני קיזוז: ${fmt(base)}</div>`:''}
+        </div>`;
+      list.appendChild(row);
+    });
+  }
+
+  renderGroup(familyN,'n',"משפחת נ'",'badge-n');
+  renderGroup(familyA,'a',"משפחת א'",'badge-a');
+
+  const allTotal = [...familyN.map(m=>share('n')-(m.past||0)),...familyA.map(m=>share('a')-(m.past||0))].reduce((a,b)=>a+b,0);
+  const tr=document.createElement('div');
+  tr.className='total-row';
+  tr.innerHTML=`<span class="total-label">סה"כ לחלוקה (לאחר קיזוז)</span><span class="total-value">${fmt(allTotal)}</span>`;
+  list.appendChild(tr);
+}
+
+buildMonthSelect();
+renderPastInputs();
+calculate();
+</script>
+</body>
+</html>
