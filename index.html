@@ -35,7 +35,6 @@
   .toggle-group { display: flex; border: 2px solid #e2e8e5; border-radius: 12px; overflow: hidden; background: #fafcfa; margin-bottom: 0.5rem; }
   .toggle-btn { flex: 1; padding: 12px; font-size: 16px; font-weight: 500; font-family: 'Heebo', sans-serif; background: transparent; border: none; cursor: pointer; color: #778880; transition: all 0.2s; text-align: center; }
   
-  /* הגדלה והבלטה משמעותית של הכיתוב והשברים מתחת לצורת החלוקה */
   .toggle-btn .subText { font-size: 15px; font-weight: 700; opacity: 1; display: block; margin-top: 6px; color: #5c7569; letter-spacing: 0.5px; }
   .toggle-btn.active { background: #e6f0ec; color: #2d4a3e; font-weight: 600; }
   .toggle-btn.active .subText { color: #1e3a2f; }
@@ -60,7 +59,7 @@
   .past-record-item .rec-year { font-weight: 600; color: #444; }
   .past-record-item .rec-indexed { font-size: 12px; color: #688274; margin-top: 2px; font-style: italic; }
   
-  /* כפתורי עריכה קטנים וחמודים */
+  /* כפתורי עריכה */
   .btn-inline-edit { background: none; border: none; color: #4a6b5d; cursor: pointer; font-size: 13px; font-weight: 500; text-decoration: underline; padding: 2px 6px; }
   .btn-inline-edit:hover { color: #2d4a3e; }
   
@@ -103,25 +102,32 @@
 
   .negative-alert { color: #c53030 !important; }
 
-  /* כפתור שמירה ואזור תרחישים */
-  .scenario-trigger { display: flex; justify-content: center; margin-bottom: 1.5rem; }
-  .btn-scenario { background: #4a6b5d; color: #fff; border: none; border-radius: 12px; padding: 12px 24px; font-family: 'Heebo', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(74,107,93,0.15); transition: background 0.2s; }
+  /* אזור פעולות ושיתוף */
+  .actions-area { display: flex; flex-direction: column; gap: 10px; align-items: center; margin-bottom: 1.5rem; }
+  .btn-group-row { display: flex; gap: 10px; width: 100%; justify-content: center; }
+  
+  .btn-scenario { background: #4a6b5d; color: #fff; border: none; border-radius: 12px; padding: 12px 20px; font-family: 'Heebo', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(74,107,93,0.15); transition: background 0.2s; flex: 1; max-width: 280px; justify-content: center; }
   .btn-scenario:hover { background: #395448; }
+  
+  .btn-share { background: #2b6cb0; color: #fff; border: none; border-radius: 12px; padding: 12px 20px; font-family: 'Heebo', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(43,108,176,0.15); transition: background 0.2s; flex: 1; max-width: 280px; justify-content: center; }
+  .btn-share:hover { background: #2c5282; }
 
   .table-responsive { width: 100%; overflow-x: auto; margin-top: 10px; }
   .compare-table { width: 100%; border-collapse: collapse; text-align: right; font-size: 14px; }
   .compare-table th, .compare-table td { padding: 12px; border-bottom: 1px solid #eef2f0; white-space: nowrap; }
   .compare-table th { background: #f4f8f6; color: #4a6b5d; font-weight: 600; }
   .compare-table td { background: #fff; }
-  .th-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .btn-delete-scen { background: none; border: none; color: #c53030; cursor: pointer; font-size: 12px; }
-  .btn-delete-scen:hover { text-decoration: underline; }
+  .th-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 140px; }
+  .btn-delete-scen { background: none; border: none; color: #c53030; cursor: pointer; font-size: 13px; font-weight: bold; padding: 2px 6px; }
+  .btn-delete-scen:hover { text-decoration: underline; color: #9b2c2c; }
 
   .footer { text-align: center; font-size: 12px; color: #a0aec0; margin-top: 2rem; padding-bottom: 2rem; }
 
   @media (max-width: 600px) {
     .family-grid { grid-template-columns: 1fr; }
     .pool-summary { grid-template-columns: 1fr; }
+    .btn-group-row { flex-direction: column; align-items: center; }
+    .btn-scenario, .btn-share { width: 100%; max-width: 100%; }
   }
 </style>
 </head>
@@ -210,8 +216,11 @@
     <div id="final-results-container"></div>
   </div>
 
-  <div class="scenario-trigger">
-    <button class="btn-scenario" onclick="saveCurrentScenario()">💾 שמור תרחיש זה להשוואה</button>
+  <div class="actions-area">
+    <div class="btn-group-row">
+      <button class="btn-scenario" onclick="saveCurrentScenario()">💾 שמור תרחיש זה להשוואה</button>
+      <button class="btn-share" onclick="copyShareableLink()">🔗 העתקת לינק לשיתוף</button>
+    </div>
   </div>
 
   <div class="card" id="comparison-card" style="display: none; border-color: #a3c2b5;">
@@ -238,6 +247,7 @@
 const CPI_DATA = { 2010: 65.2, 2015: 71.7, 2016: 71.4, 2018: 72.7, 2019: 73.5, 2024: 100.0, 2025: 102.8 };
 const LATEST_CPI = 102.8;
 
+// נתוני ברירת המחדל ההתחלתיים
 let familyData = {
   oof: [
     { id: 'sivan', name: 'סיון', past: [] },
@@ -255,13 +265,61 @@ let familyData = {
 let currentDistributionMode = 'equal';
 let currentIndexMode = false;
 let currentBalanceMode = true;
-
 let savedScenarios = [];
+
+let editingRecordId = null;
 let activeCalculationsCache = {};
-let editingRecordId = null; // שומר את מזהה השורה שנמצאת כרגע בעריכה
 
 function formatNumber(num) { return Math.round(num).toLocaleString('he-IL'); }
 function parseFormattedNumber(str) { return parseFloat(str.replace(/,/g, '')) || 0; }
+
+// פונקציות סנכרון המצב לתוך ה-URL
+function updateURLState() {
+  const state = {
+    mainAmount: parseFormattedNumber(document.getElementById('mainAmountInput').value),
+    distMode: currentDistributionMode,
+    idxMode: currentIndexMode,
+    balMode: currentBalanceMode,
+    familyData: familyData,
+    scenarios: savedScenarios
+  };
+  
+  // הפיכת האובייקט למחרוזת מוצפנת קלות (Base64 אחוזים) כדי שתעבור בבטחה בקישור
+  const jsonString = JSON.stringify(state);
+  const encodedState = btoa(unescape(encodeURIComponent(jsonString)));
+  
+  // עדכון הכתובת בדפדפן ללא רענון הדף
+  window.history.replaceState(null, '', '#' + encodedState);
+}
+
+// טעינת המצב מתוך ה-URL במידה וקיים
+function loadURLState() {
+  if (window.location.hash) {
+    try {
+      const encodedState = window.location.hash.substring(1);
+      const jsonString = decodeURIComponent(escape(atob(encodedState)));
+      const state = JSON.parse(jsonString);
+      
+      if (state.mainAmount !== undefined) document.getElementById('mainAmountInput').value = state.mainAmount.toLocaleString('he-IL');
+      if (state.distMode) currentDistributionMode = state.distMode;
+      if (state.idxMode !== undefined) currentIndexMode = state.idxMode;
+      if (state.balMode !== undefined) currentBalanceMode = state.balMode;
+      if (state.familyData) familyData = state.familyData;
+      if (state.scenarios) savedScenarios = state.scenarios;
+      
+      // עדכון ויזואלי של הכפתורים על בסיס הנתונים שנטענו
+      document.getElementById('mode-equal').classList.toggle('active', currentDistributionMode === 'equal');
+      document.getElementById('mode-weighted').classList.toggle('active', currentDistributionMode === 'weighted');
+      document.getElementById('index-yes').classList.toggle('active', currentIndexMode === true);
+      document.getElementById('index-no').classList.toggle('active', currentIndexMode === false);
+      document.getElementById('balance-yes').classList.toggle('active', currentBalanceMode === true);
+      document.getElementById('balance-no').classList.toggle('active', currentBalanceMode === false);
+      
+    } catch (e) {
+      console.error("שגיאה בטעינת הנתונים מהקישור המשותף", e);
+    }
+  }
+}
 
 function handleMainAmountInput(input) {
   let cursorPosition = input.selectionStart;
@@ -325,10 +383,9 @@ function addPastRecord(famKey, memberId) {
   }
 }
 
-// מעבר למצב עריכה של שורה קיימת
 function startInlineEdit(recordId) {
   editingRecordId = recordId;
-  calculateAll(); // מרנדר מחדש כדי להציג את תיבות העריכה בשורה הספציפית
+  calculateAll();
 }
 
 function cancelInlineEdit() {
@@ -336,7 +393,6 @@ function cancelInlineEdit() {
   calculateAll();
 }
 
-// שמירת השינויים שבוצעו בעריכת שורה
 function saveInlineEdit(famKey, memberId, recordId) {
   const newAmountStr = document.getElementById(`edit-amount-${recordId}`).value;
   const newYear = parseInt(document.getElementById(`edit-year-${recordId}`).value);
@@ -347,22 +403,16 @@ function saveInlineEdit(famKey, memberId, recordId) {
   let member = familyData[famKey].find(m => m.id === memberId);
   if (member) {
     let rec = member.past.find(r => r.id === recordId);
-    if (rec) {
-      rec.amount = newAmount;
-      rec.year = newYear;
-    }
+    if (rec) { rec.amount = newAmount; rec.year = newYear; }
   }
   editingRecordId = null;
   calculateAll();
 }
 
-// מחיקת שורת כסף מהעבר
 function deleteInlineRecord(famKey, memberId, recordId) {
   if(!confirm("האם בטוח למחוק סכום עבר זה מהרשימה?")) return;
   let member = familyData[famKey].find(m => m.id === memberId);
-  if (member) {
-    member.past = member.past.filter(r => r.id !== recordId);
-  }
+  if (member) { member.past = member.past.filter(r => r.id !== recordId); }
   editingRecordId = null;
   calculateAll();
 }
@@ -380,7 +430,6 @@ function renderFamilyInputs() {
         html += `<div style="font-size: 13px; color: #aaa; font-style: italic; padding: 4px;">אין כספי עבר מוזנים</div>`;
       } else {
         member.past.forEach(item => {
-          // בדיקה האם פריט זה נמצא כרגע במצב עריכה פעיל
           if (editingRecordId === item.id) {
             html += `
               <div class="edit-mode-container">
@@ -419,7 +468,6 @@ function renderFamilyInputs() {
       }
       html += `</div>`;
       
-      // טופס הוספה משני וסולידי יותר מתחת לרשימה המודגשת
       html += `
         <div class="add-rec-form">
           <div class="inputs-row">
@@ -509,6 +557,10 @@ function calculateAll() {
       resultsContainer.appendChild(row);
     });
   });
+
+  // עדכון אוטומטי של המצב ב-URL בכל פעם שמתבצע שינוי כלשהו
+  updateURLState();
+  renderComparisonTable();
 }
 
 function saveCurrentScenario() {
@@ -521,12 +573,13 @@ function saveCurrentScenario() {
     data: { ...activeCalculationsCache }
   });
 
-  renderComparisonTable();
+  calculateAll(); // יעדכן את ה-URL ואת הטבלה
 }
 
 function deleteScenario(id) {
+  if(!confirm("האם למחוק תרחיש שמור זה?")) return;
   savedScenarios = savedScenarios.filter(scen => scen.id !== id);
-  renderComparisonTable();
+  calculateAll(); // יעדכן את ה-URL ואת הטבלה
 }
 
 function renderComparisonTable() {
@@ -546,7 +599,7 @@ function renderComparisonTable() {
       <th>
         <div class="th-actions">
           <span>${scen.name}</span>
-          <button class="btn-delete-scen" onclick="deleteScenario(${scen.id})">❌</button>
+          <button class="btn-delete-scen" onclick="deleteScenario(${scen.id})" title="מחק תרחיש">❌ למחק</button>
         </div>
       </th>`;
   });
@@ -568,6 +621,19 @@ function renderComparisonTable() {
   });
 }
 
+function copyShareableLink() {
+  // מעתיק את הקישור המלא (כולל ה-Hash המעודכן) ללוח
+  const fullLink = window.location.href;
+  navigator.clipboard.writeText(fullLink).then(() => {
+    alert("🔗 הקישור המעודכן הועתק ללוח בהצלחה!\nאתם יכולים לשלוח אותו לכל מי שתרצו בוואטסאפ או במייל.");
+  }).catch(err => {
+    console.error("שגיאה בהעתקת הקישור", err);
+    alert("לא הצלחנו להעתיק אוטומטית. העתיקו פשוט את הכתובת משורת הדפדפן שלכם.");
+  });
+}
+
+// הרצה ראשונית של המערכת
+loadURLState();
 calculateAll();
 </script>
 </body>
