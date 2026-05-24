@@ -9,7 +9,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Heebo', sans-serif; background: #fdfbf7; color: #333; min-height: 100vh; padding: 2rem 1rem; line-height: 1.5; }
-  .container { max-width: 800px; margin: 0 auto; }
+  .container { max-width: 850px; margin: 0 auto; }
   
   header { text-align: center; margin-bottom: 2rem; }
   h1 { font-size: 28px; font-weight: 700; color: #4a6b5d; margin-bottom: 0.5rem; }
@@ -33,33 +33,54 @@
 
   /* כפתורי בחירה דו-מצביים (Toggles) */
   .toggle-group { display: flex; border: 2px solid #e2e8e5; border-radius: 12px; overflow: hidden; background: #fafcfa; margin-bottom: 0.5rem; }
-  .toggle-btn { flex: 1; padding: 12px; font-size: 15px; font-weight: 500; font-family: 'Heebo', sans-serif; background: transparent; border: none; cursor: pointer; color: #778880; transition: all 0.2s; text-align: center; }
-  .toggle-btn .subText { font-size: 12px; font-weight: 400; opacity: 0.8; display: block; margin-top: 2px; }
+  .toggle-btn { flex: 1; padding: 12px; font-size: 16px; font-weight: 500; font-family: 'Heebo', sans-serif; background: transparent; border: none; cursor: pointer; color: #778880; transition: all 0.2s; text-align: center; }
+  
+  /* הגדלה והבלטה משמעותית של הכיתוב והשברים מתחת לצורת החלוקה */
+  .toggle-btn .subText { font-size: 15px; font-weight: 700; opacity: 1; display: block; margin-top: 6px; color: #5c7569; letter-spacing: 0.5px; }
   .toggle-btn.active { background: #e6f0ec; color: #2d4a3e; font-weight: 600; }
+  .toggle-btn.active .subText { color: #1e3a2f; }
 
   /* גריד משפחות */
   .family-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
   .family-card { background: #fcfdfe; border: 1.5px dashed #dbe3e0; border-radius: 14px; padding: 1.25rem; }
-  .family-name-title { font-size: 15px; font-weight: 600; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .family-name-title { font-size: 16px; font-weight: 700; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
   .badge { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
   .badge-oof { background: #ffe9e9; color: #bc5a5a; }
   .badge-salimi { background: #e3f2fd; color: #2b6cb0; }
 
-  .member-box { background: #fff; border: 1px solid #eef2f0; border-radius: 10px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.01); }
-  .member-header { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; margin-bottom: 8px; color: #444; }
+  .member-box { background: #fff; border: 1px solid #eef2f0; border-radius: 10px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.01); }
+  .member-header { font-weight: 700; font-size: 16px; margin-bottom: 8px; color: #222; border-bottom: 1px solid #f0f4f2; padding-bottom: 4px; }
   
-  .past-records-list { margin-bottom: 6px; }
-  .past-record-item { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-bottom: 4px; background: #f7faf8; padding: 4px 8px; border-radius: 6px; }
-  .past-record-item .rec-amount { font-weight: 500; color: #4a6b5d; }
-  .past-record-item .rec-year { color: #777; }
-  .past-record-item .rec-indexed { font-size: 11px; color: #9aa8a1; margin-right: auto; }
+  .past-records-list { margin-bottom: 12px; }
   
-  .add-rec-form { display: flex; gap: 4px; margin-top: 6px; border-top: 1px dotted #e2e8e5; padding-top: 6px; }
-  .add-rec-form input { padding: 4px 8px; font-size: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-family: 'Heebo', sans-serif; }
-  .add-rec-form input[type=text] { flex: 2; }
-  .add-rec-form input[type=number] { flex: 1; }
-  .btn-add { background: #8aa396; color: #fff; border: none; padding: 4px 10px; font-size: 12px; border-radius: 6px; cursor: pointer; font-family: 'Heebo', sans-serif; }
-  .btn-add:hover { background: #718b7e; }
+  /* הצגת סכומי העבר בצורה גדולה ובולטת יותר */
+  .past-record-item { display: flex; flex-direction: column; gap: 4px; font-size: 14px; margin-bottom: 8px; background: #f4f8f6; padding: 8px 12px; border-radius: 8px; border: 1px solid #e4ede9; }
+  .past-record-main-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+  .past-record-item .rec-amount { font-size: 16px; font-weight: 700; color: #1e3a2f; }
+  .past-record-item .rec-year { font-weight: 600; color: #444; }
+  .past-record-item .rec-indexed { font-size: 12px; color: #688274; margin-top: 2px; font-style: italic; }
+  
+  /* כפתורי עריכה קטנים וחמודים */
+  .btn-inline-edit { background: none; border: none; color: #4a6b5d; cursor: pointer; font-size: 13px; font-weight: 500; text-decoration: underline; padding: 2px 6px; }
+  .btn-inline-edit:hover { color: #2d4a3e; }
+  
+  /* אזור עריכה פעיל בתוך השורה */
+  .edit-mode-container { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-top: 4px; background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e0; }
+  .edit-mode-inputs { display: flex; gap: 4px; }
+  .edit-mode-inputs input { padding: 6px; font-size: 13px; }
+  .edit-mode-inputs select { padding: 6px; font-size: 13px; }
+  .edit-mode-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+  .btn-save-inline { background: #4a6b5d; color: #fff; border: none; padding: 3px 8px; font-size: 12px; border-radius: 4px; cursor: pointer; }
+  .btn-delete-inline { background: #c53030; color: #fff; border: none; padding: 3px 8px; font-size: 12px; border-radius: 4px; cursor: pointer; }
+  .btn-cancel-inline { background: #e2e8e5; color: #444; border: none; padding: 3px 8px; font-size: 12px; border-radius: 4px; cursor: pointer; }
+  
+  /* טופס הוספה קטן ומשני יחסית */
+  .add-rec-form { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; border-top: 1px dotted #cbd5e0; padding-top: 12px; }
+  .add-rec-form .inputs-row { display: flex; gap: 6px; }
+  .add-rec-form input[type=text] { flex: 2; padding: 8px 10px; font-size: 13px; }
+  .add-rec-form select { flex: 1.2; padding: 8px 10px; font-size: 13px; }
+  .add-rec-form .btn-add { background: #8aa396; color: #fff; border: none; padding: 8px; font-size: 13px; font-weight: 500; border-radius: 8px; cursor: pointer; font-family: 'Heebo', sans-serif; width: 100%; transition: background 0.15s; }
+  .add-rec-form .btn-add:hover { background: #718b7e; }
 
   /* סיכום ביניים ומאגרים */
   .pool-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
@@ -129,11 +150,11 @@
     <div class="toggle-group">
       <button class="toggle-btn active" id="mode-equal" onclick="setDistributionMode('equal')">
         לפי נכדים (שוויונית)
-        <span class="subText">⅐ לכל אחד מ-7 הנכדים</span>
+        <span class="subText">שביעית (⅐) לכל אחד מ-7 הנכדים</span>
       </button>
       <button class="toggle-btn" id="mode-weighted" onclick="setDistributionMode('weighted')">
         לפי משפחות
-        <span class="subText">⅛ למשפחת עוף · ⅙ למשפחת סלימי</span>
+        <span class="subText">שמינית (⅛) לעוף · שישית (⅙) לסלימי</span>
       </button>
     </div>
 
@@ -151,8 +172,8 @@
   </div>
 
   <div class="card">
-    <div class="card-title">📊 כספים שהתקבלו בעבר</div>
-    <p style="font-size: 13px; color: #718b7e; margin-bottom: 1rem;">ניתן לראות את כספי העבר של כל אחד ואף להוסיף שורות נוספות במידת הצורך:</p>
+    <div class="card-title">📊 כספים שהתקבלו בעבר ועריכתם</div>
+    <p style="font-size: 13px; color: #718b7e; margin-bottom: 1rem;">הסכומים שניתנו מוצגים בהדגשה. ניתן לערוך או למחוק כל שורה ישירות בלחיצה על "ערוך ✏️":</p>
     
     <div class="family-grid">
       <div class="family-card">
@@ -203,7 +224,7 @@
           </tr>
         </thead>
         <tbody id="table-body-rows">
-          </tbody>
+        </tbody>
       </table>
     </div>
   </div>
@@ -220,13 +241,13 @@ const LATEST_CPI = 102.8;
 let familyData = {
   oof: [
     { id: 'sivan', name: 'סיון', past: [] },
-    { id: 'gal', name: 'גל', past: [{ amount: 300000, year: 2015 }] },
-    { id: 'noga', name: 'נוגה', past: [{ amount: 750000, year: 2019 }] },
-    { id: 'shir', name: 'שיר', past: [{ amount: 1000000, year: 2018 }] }
+    { id: 'gal', name: 'גל', past: [{ id: 'gal_1', amount: 300000, year: 2015 }] },
+    { id: 'noga', name: 'נוגה', past: [{ id: 'noga_1', amount: 750000, year: 2019 }] },
+    { id: 'shir', name: 'שיר', past: [{ id: 'shir_1', amount: 1000000, year: 2018 }] }
   ],
   salimi: [
-    { id: 'eyal', name: 'איל', past: [{ amount: 500000, year: 2016 }] },
-    { id: 'yael', name: 'יעל', past: [{ amount: 300000, year: 2010 }] },
+    { id: 'eyal', name: 'איל', past: [{ id: 'eyal_1', amount: 500000, year: 2016 }] },
+    { id: 'yael', name: 'יעל', past: [{ id: 'yael_1', amount: 300000, year: 2010 }] },
     { id: 'adi', name: 'עדי', past: [] }
   ]
 };
@@ -235,10 +256,9 @@ let currentDistributionMode = 'equal';
 let currentIndexMode = false;
 let currentBalanceMode = true;
 
-// מערך לאחסון התרחישים שהמשתמש שומר
 let savedScenarios = [];
-// אובייקט זמני שמחזיק את תוצאות החישוב הנוכחי לצורך שמירה קלה
 let activeCalculationsCache = {};
+let editingRecordId = null; // שומר את מזהה השורה שנמצאת כרגע בעריכה
 
 function formatNumber(num) { return Math.round(num).toLocaleString('he-IL'); }
 function parseFormattedNumber(str) { return parseFloat(str.replace(/,/g, '')) || 0; }
@@ -255,8 +275,13 @@ function handleMainAmountInput(input) {
 }
 
 function formatLiveInput(input) {
+  let cursorPosition = input.selectionStart;
+  let originalLength = input.value.length;
   let clean = input.value.replace(/[^0-9]/g, '');
-  if(clean) input.value = parseInt(clean, 10).toLocaleString('he-IL');
+  if (clean === '') { input.value = ''; return; }
+  let formatted = parseInt(clean, 10).toLocaleString('he-IL');
+  input.value = formatted;
+  input.selectionStart = input.selectionEnd = cursorPosition + (formatted.length - originalLength);
 }
 
 function setDistributionMode(mode) {
@@ -293,7 +318,53 @@ function addPastRecord(famKey, memberId) {
   const year = parseInt(yrInput.value);
   if (!amount || !year || year < 2000 || year > 2026) { alert("אנא הזן סכום תקין ושנה הגיונית"); return; }
   let member = familyData[famKey].find(m => m.id === memberId);
-  if (member) { member.past.push({ amount: amount, year: year }); amInput.value = ''; calculateAll(); }
+  if (member) { 
+    member.past.push({ id: 'rec_' + Date.now(), amount: amount, year: year }); 
+    amInput.value = ''; 
+    calculateAll(); 
+  }
+}
+
+// מעבר למצב עריכה של שורה קיימת
+function startInlineEdit(recordId) {
+  editingRecordId = recordId;
+  calculateAll(); // מרנדר מחדש כדי להציג את תיבות העריכה בשורה הספציפית
+}
+
+function cancelInlineEdit() {
+  editingRecordId = null;
+  calculateAll();
+}
+
+// שמירת השינויים שבוצעו בעריכת שורה
+function saveInlineEdit(famKey, memberId, recordId) {
+  const newAmountStr = document.getElementById(`edit-amount-${recordId}`).value;
+  const newYear = parseInt(document.getElementById(`edit-year-${recordId}`).value);
+  const newAmount = parseFormattedNumber(newAmountStr);
+
+  if (!newAmount || !newYear) { alert("אנא הזן סכום ושנה תקינים"); return; }
+
+  let member = familyData[famKey].find(m => m.id === memberId);
+  if (member) {
+    let rec = member.past.find(r => r.id === recordId);
+    if (rec) {
+      rec.amount = newAmount;
+      rec.year = newYear;
+    }
+  }
+  editingRecordId = null;
+  calculateAll();
+}
+
+// מחיקת שורת כסף מהעבר
+function deleteInlineRecord(famKey, memberId, recordId) {
+  if(!confirm("האם בטוח למחוק סכום עבר זה מהרשימה?")) return;
+  let member = familyData[famKey].find(m => m.id === memberId);
+  if (member) {
+    member.past = member.past.filter(r => r.id !== recordId);
+  }
+  editingRecordId = null;
+  calculateAll();
 }
 
 function renderFamilyInputs() {
@@ -304,27 +375,60 @@ function renderFamilyInputs() {
       let html = `<div class="member-box">`;
       html += `<div class="member-header"><span>${member.name}</span></div>`;
       html += `<div class="past-records-list">`;
+      
       if (member.past.length === 0) {
-        html += `<div style="font-size: 12px; color: #aaa; font-style: italic;">אין כספי עבר מוזנים</div>`;
+        html += `<div style="font-size: 13px; color: #aaa; font-style: italic; padding: 4px;">אין כספי עבר מוזנים</div>`;
       } else {
         member.past.forEach(item => {
-          let effective = getEffectiveAmount(item);
-          let indexText = "";
-          if (currentIndexMode) {
-            let change = (((LATEST_CPI / (CPI_DATA[item.year] || LATEST_CPI)) - 1) * 100).toFixed(1);
-            indexText = `<span class="rec-indexed">(מוצמד: ₪${formatNumber(effective)} / +${change}%)</span>`;
+          // בדיקה האם פריט זה נמצא כרגע במצב עריכה פעיל
+          if (editingRecordId === item.id) {
+            html += `
+              <div class="edit-mode-container">
+                <div class="edit-mode-inputs">
+                  <input type="text" id="edit-amount-${item.id}" value="${item.amount.toLocaleString('he-IL')}" oninput="formatLiveInput(this)">
+                  <select id="edit-year-${item.id}">
+                    ${[2025,2024,2023,2022,2021,2020,2019,2018,2017,2016,2015,2010].map(y => `<option value="${y}" ${y === item.year ? 'selected' : ''}>${y}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="edit-mode-actions">
+                  <button class="btn-save-inline" onclick="saveInlineEdit('${famKey}', '${member.id}', '${item.id}')">שמור ✅</button>
+                  <button class="btn-delete-inline" onclick="deleteInlineRecord('${famKey}', '${member.id}', '${item.id}')">מחק ❌</button>
+                  <button class="btn-cancel-inline" onclick="cancelInlineEdit()">ביטול</button>
+                </div>
+              </div>`;
+          } else {
+            let effective = getEffectiveAmount(item);
+            let indexText = "";
+            if (currentIndexMode) {
+              let change = (((LATEST_CPI / (CPI_DATA[item.year] || LATEST_CPI)) - 1) * 100).toFixed(1);
+              indexText = `<div class="rec-indexed">שווי מוצמד: ₪${formatNumber(effective)} (+${change}%)</div>`;
+            }
+            html += `
+              <div class="past-record-item">
+                <div class="past-record-main-row">
+                  <div>
+                    <span class="rec-amount">₪${formatNumber(item.amount)}</span> 
+                    <span class="rec-year">(${item.year})</span>
+                  </div>
+                  <button class="btn-inline-edit" onclick="startInlineEdit('${item.id}')">ערוך ✏️</button>
+                </div>
+                ${indexText}
+              </div>`;
           }
-          html += `<div class="past-record-item"><span class="rec-amount">₪${formatNumber(item.amount)}</span> <span class="rec-year">שנת ${item.year}</span> ${indexText}</div>`;
         });
       }
       html += `</div>`;
+      
+      // טופס הוספה משני וסולידי יותר מתחת לרשימה המודגשת
       html += `
         <div class="add-rec-form">
-          <input type="text" id="add-amount-${member.id}" placeholder="סכום בש״ח" oninput="formatLiveInput(this)">
-          <select id="add-year-${member.id}">
-            <option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option><option value="2019">2019</option><option value="2018">2018</option><option value="2017">2017</option><option value="2016">2016</option><option value="2015">2015</option><option value="2010">2010</option>
-          </select>
-          <button class="btn-add" onclick="addPastRecord('${famKey}', '${member.id}')">הוסף</button>
+          <div class="inputs-row">
+            <input type="text" id="add-amount-${member.id}" placeholder="הוספת סכום חדש" oninput="formatLiveInput(this)">
+            <select id="add-year-${member.id}">
+              <option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option><option value="2019">2019</option><option value="2018">2018</option><option value="2017">2017</option><option value="2016">2016</option><option value="2015">2015</option><option value="2010">2010</option>
+            </select>
+          </div>
+          <button class="btn-add" onclick="addPastRecord('${famKey}', '${member.id}')">➕ הוסף לרשימה</button>
         </div>`;
       html += `</div>`;
       container.innerHTML += html;
@@ -373,18 +477,16 @@ function calculateAll() {
       let distributionDescription = "";
       if (currentDistributionMode === 'equal') {
         grossAmount = combinedPool / 7;
-        distributionDescription = "⅐ מהמאגר";
+        distributionDescription = "⅐ מהמאגר המשותף";
       } else {
         grossAmount = fam.key === 'oof' ? combinedPool / 8 : combinedPool / 6;
-        distributionDescription = fam.key === 'oof' ? "⅛ מהמאגר" : "⅙ מהמאגר";
+        distributionDescription = fam.key === 'oof' ? "⅛ מהמאגר המשותף" : "⅙ מהמאגר המשותף";
       }
 
       let netAmount = grossAmount;
       if (currentBalanceMode) netAmount = grossAmount - (memberPastSumsMap[member.id] || 0);
 
       let pctFromCurrentPool = currentTotalAvailable > 0 ? (netAmount / currentTotalAvailable) * 100 : 0;
-      
-      // שמירה בזיכרון המטמון של הריצה הנוכחית
       activeCalculationsCache[member.id] = netAmount;
 
       let row = document.createElement('div');
@@ -402,14 +504,13 @@ function calculateAll() {
         </div>
         <div class="res-values">
           <div class="res-final-amount ${isNegative ? 'negative-alert' : ''}">${isNegative ? 'החזר חוב: ' : ''}₪${formatNumber(Math.abs(netAmount))}</div>
-          <div class="res-pct">${pctFromCurrentPool.toFixed(2)}% מסך הקופה</div>
+          <div class="res-pct">${pctFromCurrentPool.toFixed(2)}% מסך הקופה הנוכחית</div>
         </div>`;
       resultsContainer.appendChild(row);
     });
   });
 }
 
-// פונקציה לשמירת המצב הנוכחי לתוך מערך ההשוואה
 function saveCurrentScenario() {
   let scenarioName = prompt("הזינו שם עבור התרחיש שאתם שומרים:\n(לדוגמה: 'חלוקה שוויונית עם מדד')");
   if (!scenarioName || scenarioName.trim() === "") return;
@@ -423,28 +524,22 @@ function saveCurrentScenario() {
   renderComparisonTable();
 }
 
-// מחיקת תרחיש שנשמר
 function deleteScenario(id) {
   savedScenarios = savedScenarios.filter(scen => scen.id !== id);
   renderComparisonTable();
 }
 
-// בנייה ועדכון של טבלת ההשוואה התחתונה
 function renderComparisonTable() {
   const card = document.getElementById('comparison-card');
   const headerRow = document.getElementById('table-header-row');
   const bodyRows = document.getElementById('table-body-rows');
 
-  // אם אין תרחישים שמורים, נסתיר את הכרטיס ונסיים
   if (savedScenarios.length === 0) {
     card.style.display = 'none';
     return;
   }
 
-  // הצגת הכרטיס
   card.style.display = 'block';
-
-  // ניקוי ובניית כותרות הטבלה (עמודת שם + עמודה לכל תרחיש)
   headerRow.innerHTML = '<th>שם בן משפחה</th>';
   savedScenarios.forEach(scen => {
     headerRow.innerHTML += `
@@ -456,13 +551,11 @@ function renderComparisonTable() {
       </th>`;
   });
 
-  // בניית שורות בני המשפחה
   bodyRows.innerHTML = '';
   const allMembers = [...familyData.oof, ...familyData.salimi];
 
   allMembers.forEach(member => {
     let rowHtml = `<tr><td><strong>${member.name}</strong></td>`;
-    
     savedScenarios.forEach(scen => {
       let val = scen.data[member.id] || 0;
       let isNegative = val < 0;
@@ -470,7 +563,6 @@ function renderComparisonTable() {
         ${isNegative ? '-' : ''}₪${formatNumber(Math.abs(val))}
       </td>`;
     });
-
     rowHtml += '</tr>';
     bodyRows.innerHTML += rowHtml;
   });
