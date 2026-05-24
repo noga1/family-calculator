@@ -8,184 +8,74 @@
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Heebo', sans-serif;
-    background: #f5f5f0;
-    color: #1a1a1a;
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
+  body { font-family: 'Heebo', sans-serif; background: #f5f5f0; color: #1a1a1a; min-height: 100vh; padding: 2rem 1rem; }
   .container { max-width: 640px; margin: 0 auto; }
-  h1 {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-    color: #1a1a1a;
-  }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 0.25rem; }
   .subtitle { font-size: 14px; color: #888; margin-bottom: 2rem; }
-  .card {
-    background: #fff;
-    border: 0.5px solid #e0e0d8;
-    border-radius: 14px;
-    padding: 1.25rem;
-    margin-bottom: 1rem;
-  }
-  .card-title {
-    font-size: 12px;
-    font-weight: 500;
-    color: #999;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 1rem;
-  }
+  .card { background: #fff; border: 0.5px solid #e0e0d8; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
+  .card-title { font-size: 12px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
   .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .row:last-child { margin-bottom: 0; }
   label { font-size: 14px; color: #666; min-width: 140px; }
   input[type=number], input[type=text], select {
-    border: 0.5px solid #d0d0c8;
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 14px;
-    font-family: 'Heebo', sans-serif;
-    background: #fafaf8;
-    color: #1a1a1a;
-    outline: none;
-    transition: border-color 0.15s;
-    width: 100%;
+    border: 0.5px solid #d0d0c8; border-radius: 8px; padding: 8px 12px;
+    font-size: 14px; font-family: 'Heebo', sans-serif; background: #fafaf8;
+    color: #1a1a1a; outline: none; transition: border-color 0.15s; width: 100%;
   }
   input:focus, select:focus { border-color: #a0a0e0; background: #fff; }
   .amount-wrap { display: flex; align-items: center; gap: 8px; flex: 1; }
   .amount-wrap input { flex: 1; }
   .currency { font-size: 14px; color: #999; }
+
+  /* toggle — גדול ובולט */
   .toggle-group {
-    display: flex;
-    border: 0.5px solid #d0d0c8;
-    border-radius: 8px;
-    overflow: hidden;
-    flex: 1;
+    display: flex; border: 0.5px solid #d0d0c8; border-radius: 10px;
+    overflow: hidden; flex: 1;
   }
   .toggle-btn {
-    flex: 1;
-    padding: 9px 8px;
-    font-size: 13px;
-    font-family: 'Heebo', sans-serif;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #888;
-    line-height: 1.4;
-    transition: all 0.15s;
+    flex: 1; padding: 13px 10px; font-size: 15px; font-weight: 500;
+    font-family: 'Heebo', sans-serif; background: transparent; border: none;
+    cursor: pointer; color: #aaa; line-height: 1.4; transition: all 0.15s;
   }
-  .toggle-btn.active {
-    background: #f0f0e8;
-    color: #1a1a1a;
-    font-weight: 500;
-  }
+  .toggle-btn .sub { font-size: 12px; font-weight: 400; opacity: 0.75; display: block; margin-top: 2px; }
+  .toggle-btn.active { background: #f0f0e8; color: #1a1a1a; }
+
   .family-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .family-card {
-    border: 0.5px solid #e0e0d8;
-    border-radius: 10px;
-    padding: 0.9rem;
-  }
-  .family-header {
-    font-size: 12px;
-    font-weight: 500;
-    color: #888;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .badge {
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 6px;
-  }
+  .family-card { border: 0.5px solid #e0e0d8; border-radius: 10px; padding: 0.9rem; }
+  .family-header { font-size: 12px; font-weight: 500; color: #888; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 6px; }
   .badge-n { background: #e1f5ee; color: #0f6e56; }
   .badge-a { background: #eeedfe; color: #3c3489; }
-  .member-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 6px 0;
-    border-bottom: 0.5px solid #f0f0e8;
-    font-size: 14px;
-    color: #1a1a1a;
-  }
+
+  .member-row { display: flex; align-items: flex-start; flex-direction: column; padding: 8px 0; border-bottom: 0.5px solid #f0f0e8; }
   .member-row:last-child { border-bottom: none; }
-  .past-input { width: 80px !important; font-size: 13px !important; text-align: left; }
-  .index-info {
-    background: #f5f5f0;
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin-top: 10px;
-    font-size: 13px;
-    color: #666;
-    line-height: 1.7;
-  }
+  .member-top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+  .member-name-label { font-size: 14px; color: #1a1a1a; }
+  .member-indexed { font-size: 11px; color: #aaa; margin-top: 3px; }
+  .past-amount { font-size: 13px; font-weight: 500; color: #444; }
+
+  .index-info { background: #f5f5f0; border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 13px; color: #666; line-height: 1.7; }
   .index-info strong { color: #1a1a1a; font-weight: 500; }
-  .summary-bar {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 1rem;
-  }
-  .stat {
-    background: #fff;
-    border: 0.5px solid #e0e0d8;
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
-    text-align: center;
-  }
+
+  .summary-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+  .stat { background: #fff; border: 0.5px solid #e0e0d8; border-radius: 10px; padding: 0.75rem 1rem; text-align: center; }
   .stat-label { font-size: 12px; color: #999; margin-bottom: 4px; }
-  .stat-value { font-size: 18px; font-weight: 500; color: #1a1a1a; }
-  .results-card {
-    background: #f5f5f0;
-    border-radius: 14px;
-    padding: 1.25rem;
-    margin-bottom: 1rem;
-  }
-  .results-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: #888;
-    margin-bottom: 8px;
-  }
-  .group-label {
-    font-size: 11px;
-    font-weight: 500;
-    color: #aaa;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin: 12px 0 4px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .result-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 0.5px solid #e8e8e0;
-  }
+  .stat-value { font-size: 17px; font-weight: 500; color: #1a1a1a; }
+
+  .results-card { background: #f5f5f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
+  .results-title { font-size: 13px; font-weight: 500; color: #888; margin-bottom: 8px; }
+  .group-label { font-size: 11px; font-weight: 500; color: #aaa; letter-spacing: 0.05em; text-transform: uppercase; margin: 12px 0 4px; display: flex; align-items: center; gap: 6px; }
+  .result-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 0.5px solid #e8e8e0; }
   .result-row:last-of-type { border-bottom: none; }
-  .member-name { font-size: 15px; color: #1a1a1a; }
-  .member-detail { font-size: 12px; color: #aaa; margin-top: 2px; }
+  .r-name { font-size: 15px; color: #1a1a1a; }
+  .r-detail { font-size: 11px; color: #aaa; margin-top: 2px; line-height: 1.5; }
   .amount-positive { font-size: 18px; font-weight: 500; color: #1d9e75; }
   .amount-negative { font-size: 18px; font-weight: 500; color: #d85a30; }
-  .subtotal { font-size: 12px; color: #aaa; }
-  .total-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 12px;
-    margin-top: 8px;
-    border-top: 0.5px solid #d0d0c8;
-  }
+  .subtotal { font-size: 11px; color: #aaa; margin-top: 2px; }
+  .total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; margin-top: 8px; border-top: 0.5px solid #d0d0c8; }
   .total-label { font-size: 13px; font-weight: 500; color: #888; }
   .total-value { font-size: 20px; font-weight: 600; color: #1a1a1a; }
+  .footer { font-size: 11px; color: #bbb; text-align: center; margin-top: 1rem; }
   @media (max-width: 480px) {
     .family-grid { grid-template-columns: 1fr; }
     .summary-bar { grid-template-columns: 1fr 1fr; }
@@ -198,29 +88,34 @@
   <h1>חלוקת כספים משפחתית</h1>
   <p class="subtitle">משפחת נ' ומשפחת א'</p>
 
+  <!-- סכום -->
   <div class="card">
     <div class="card-title">סכום לחלוקה</div>
     <div class="row">
       <label>סך הכספים</label>
       <div class="amount-wrap">
-        <input type="number" id="totalAmount" value="100000" min="0" step="1000" oninput="calculate()" />
+        <input type="number" id="totalAmount" value="5000000" min="0" step="10000" oninput="calculate()" />
         <span class="currency">₪</span>
       </div>
     </div>
   </div>
 
+  <!-- חלוקה -->
   <div class="card">
     <div class="card-title">אופן חלוקה</div>
     <div class="toggle-group">
       <button class="toggle-btn active" onclick="setMode('equal')" id="btn-equal">
-        חלוקה שוויונית<br><span style="font-size:11px;opacity:0.7;">⅐ לכל אחד</span>
+        חלוקה שוויונית
+        <span class="sub">⅐ שווה לכל אחד מ-7 האנשים</span>
       </button>
       <button class="toggle-btn" onclick="setMode('weighted')" id="btn-weighted">
-        חלוקה לפי משפחה<br><span style="font-size:11px;opacity:0.7;">⅛ משפחת נ' · ⅙ משפחת א'</span>
+        חלוקה לפי משפחה
+        <span class="sub">⅛ למשפחת נ' · ⅙ למשפחת א'</span>
       </button>
     </div>
   </div>
 
+  <!-- הצמדה -->
   <div class="card">
     <div class="card-title">הצמדה למדד המחירים לצרכן</div>
     <div class="row">
@@ -239,8 +134,9 @@
     </div>
   </div>
 
+  <!-- קיזוז -->
   <div class="card">
-    <div class="card-title">קיזוז סכומי עבר</div>
+    <div class="card-title">קיזוז סכומי עבר — מוצמד למדד</div>
     <div class="family-grid">
       <div class="family-card">
         <div class="family-header">משפחת נ' <span class="badge badge-n">⅛ במצב ב'</span></div>
@@ -251,9 +147,10 @@
         <div id="members-a"></div>
       </div>
     </div>
-    <p style="font-size:12px;color:#aaa;margin-top:10px;">הזן סכומים שכבר שולמו — יקוזזו מהחלק של כל אחד</p>
+    <p style="font-size:12px;color:#aaa;margin-top:10px;">כל סכום מוצמד למדד משנת הקבלה עד המדד העדכני</p>
   </div>
 
+  <!-- סיכום -->
   <div class="summary-bar">
     <div class="stat">
       <div class="stat-label">סכום מקורי</div>
@@ -269,16 +166,21 @@
     </div>
   </div>
 
+  <!-- תוצאות -->
   <div class="results-card">
     <div class="results-title">תוצאות חלוקה</div>
     <div id="results-list"></div>
   </div>
 
-  <p style="font-size:11px;color:#bbb;text-align:center;margin-top:1rem;">נתוני מדד: הלמ"ס — בסיס ממוצע 2024=100 · עדכני לאפריל 2025</p>
+  <p class="footer">נתוני מדד: הלמ"ס — בסיס ממוצע 2024=100 · עדכני לאפריל 2025</p>
 </div>
 
 <script>
-const CPI = {
+// מדד המחירים לצרכן — בסיס ממוצע 2024=100
+// ערך שנתי = ממוצע החודשים, משמש כבסיס לקיזוז עבר לפי שנה
+const CPI_MONTHLY = {
+  '2010-01':65.2,'2011-01':67.8,'2012-01':70.1,'2013-01':71.5,'2014-01':72.3,
+  '2015-01':71.8,'2016-01':71.5,'2017-01':71.9,'2018-01':72.8,'2019-01':73.6,
   '2020-01':88.1,'2020-02':87.9,'2020-03':87.7,'2020-04':87.3,'2020-05':87.1,'2020-06':87.2,
   '2020-07':87.5,'2020-08':87.7,'2020-09':87.9,'2020-10':87.6,'2020-11':87.4,'2020-12':87.6,
   '2021-01':87.9,'2021-02':88.1,'2021-03':88.5,'2021-04':89.3,'2021-05':89.6,'2021-06':90.1,
@@ -291,14 +193,56 @@ const CPI = {
   '2024-07':99.9,'2024-08':100.4,'2024-09':100.4,'2024-10':100.5,'2024-11':101.1,'2024-12':101.2,
   '2025-01':101.3,'2025-02':101.5,'2025-03':101.7,'2025-04':102.8
 };
+
+// ממוצע שנתי משוער לשנים 2010–2019 (בסיס 2024=100)
+const CPI_YEAR_AVG = {
+  2010:65.2, 2011:67.5, 2012:70.0, 2013:71.4, 2014:72.2,
+  2015:71.7, 2016:71.4, 2017:71.8, 2018:72.7, 2019:73.5,
+  2020:87.6, 2021:90.2, 2022:96.5, 2023:99.2, 2024:100.0
+};
+
 const MONTHS_HE = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-const familyN = [{id:'sivan',name:'סיון',past:0},{id:'gal',name:'גל',past:0},{id:'noga',name:'נוגה',past:0},{id:'shir',name:'שיר',past:0}];
-const familyA = [{id:'eyal',name:'איל',past:0},{id:'yael',name:'יעל',past:0},{id:'adi',name:'עדי',past:0}];
+
+// נתוני עבר: שם, שנת קבלה, סכום נומינלי
+const familyN = [
+  { id:'gal',   name:'גל',   year:2015, nominalPast:300000  },
+  { id:'shir',  name:'שיר',  year:2018, nominalPast:1000000 },
+  { id:'noga',  name:'נוגה', year:2019, nominalPast:750000  },
+  { id:'sivan', name:'סיון', year:null, nominalPast:0       },
+];
+const familyA = [
+  { id:'yael', name:'יעל', year:2010, nominalPast:300000  },
+  { id:'eyal', name:'איל', year:2016, nominalPast:500000  },
+  { id:'adi',  name:'עדי', year:2018, nominalPast:1000000 },
+];
+
 let mode = 'equal', useIndex = false;
+
+function getLatestKey() { return Object.keys(CPI_MONTHLY).sort().pop(); }
+function getLatestVal() { return CPI_MONTHLY[getLatestKey()]; }
+
+function getCpiForYear(year) {
+  if (CPI_YEAR_AVG[year]) return CPI_YEAR_AVG[year];
+  // חיפוש ינואר של אותה שנה
+  const k = year + '-01';
+  return CPI_MONTHLY[k] || null;
+}
+
+function indexedPast(m) {
+  if (!m.nominalPast || !m.year) return m.nominalPast || 0;
+  const base = getCpiForYear(m.year);
+  const current = getLatestVal();
+  if (!base || !current) return m.nominalPast;
+  return m.nominalPast * (current / base);
+}
+
+function fmt(n) {
+  return '₪' + Math.round(n).toLocaleString('he-IL');
+}
 
 function buildMonthSelect() {
   const sel = document.getElementById('baseMonth');
-  Object.keys(CPI).sort().reverse().forEach(k => {
+  Object.keys(CPI_MONTHLY).sort().reverse().forEach(k => {
     const [y,m] = k.split('-');
     const opt = document.createElement('option');
     opt.value = k;
@@ -308,104 +252,130 @@ function buildMonthSelect() {
   sel.value = '2024-01';
 }
 
-function fmt(n) { return '₪' + Math.round(n).toLocaleString('he-IL'); }
-function getLatest() { return Object.keys(CPI).sort().pop(); }
-
-function renderPastInputs() {
-  [['n',familyN],['a',familyA]].forEach(([fam,list]) => {
-    const el = document.getElementById('members-'+fam);
+function renderPastCards() {
+  [['n', familyN], ['a', familyA]].forEach(([fam, list]) => {
+    const el = document.getElementById('members-' + fam);
     el.innerHTML = '';
     list.forEach(m => {
+      const idx = indexedPast(m);
       const d = document.createElement('div');
       d.className = 'member-row';
-      d.innerHTML = `<span>${m.name}</span><input class="past-input" type="number" value="${m.past||''}" placeholder="0" step="100" oninput="updatePast('${fam}','${m.id}',this.value)" />`;
+      let detail = '';
+      if (m.nominalPast && m.year) {
+        const base = getCpiForYear(m.year);
+        const cur = getLatestVal();
+        const pct = ((cur/base - 1)*100).toFixed(1);
+        detail = `<div class="member-indexed">נומינלי: ${fmt(m.nominalPast)} (${m.year}) · הצמדה: +${pct}%<br>מוצמד: ${fmt(idx)}</div>`;
+      } else if (!m.nominalPast) {
+        detail = `<div class="member-indexed">אין קיזוז</div>`;
+      }
+      d.innerHTML = `
+        <div class="member-top">
+          <span class="member-name-label">${m.name}</span>
+          <span class="past-amount">${m.nominalPast ? fmt(idx) : '—'}</span>
+        </div>
+        ${detail}
+      `;
       el.appendChild(d);
     });
   });
 }
 
-function updatePast(fam,id,val) {
-  const list = fam==='n'?familyN:familyA;
-  const m = list.find(x=>x.id===id);
-  if(m){m.past=parseFloat(val)||0;calculate();}
-}
-
 function setMode(m) {
-  mode=m;
-  document.getElementById('btn-equal').className='toggle-btn'+(m==='equal'?' active':'');
-  document.getElementById('btn-weighted').className='toggle-btn'+(m==='weighted'?' active':'');
+  mode = m;
+  document.getElementById('btn-equal').className = 'toggle-btn' + (m==='equal' ? ' active' : '');
+  document.getElementById('btn-weighted').className = 'toggle-btn' + (m==='weighted' ? ' active' : '');
   calculate();
 }
 
 function setIndex(v) {
-  useIndex=v;
-  document.getElementById('btn-no-index').className='toggle-btn'+(!v?' active':'');
-  document.getElementById('btn-yes-index').className='toggle-btn'+(v?' active':'');
-  document.getElementById('index-section').style.display=v?'':'none';
+  useIndex = v;
+  document.getElementById('btn-no-index').className = 'toggle-btn' + (!v ? ' active' : '');
+  document.getElementById('btn-yes-index').className = 'toggle-btn' + (v ? ' active' : '');
+  document.getElementById('index-section').style.display = v ? '' : 'none';
   calculate();
 }
 
 function calculate() {
-  const total = parseFloat(document.getElementById('totalAmount').value)||0;
+  const total = parseFloat(document.getElementById('totalAmount').value) || 0;
   let adjusted = total, pctChange = 0;
-  if(useIndex) {
+
+  if (useIndex) {
     const bk = document.getElementById('baseMonth').value;
-    const lk = getLatest();
-    const bv = CPI[bk], lv = CPI[lk];
-    if(bv&&lv) {
-      adjusted = total*(lv/bv);
-      pctChange = ((lv/bv)-1)*100;
-      const [by,bm]=bk.split('-'), [ly,lm]=lk.split('-');
+    const lk = getLatestKey();
+    const bv = CPI_MONTHLY[bk], lv = CPI_MONTHLY[lk];
+    if (bv && lv) {
+      adjusted = total * (lv / bv);
+      pctChange = ((lv / bv) - 1) * 100;
+      const [by,bm] = bk.split('-'), [ly,lm] = lk.split('-');
       document.getElementById('index-info').innerHTML =
         `מדד <strong>${MONTHS_HE[parseInt(bm)-1]} ${by}</strong>: ${bv.toFixed(1)} נקודות<br>
          מדד <strong>${MONTHS_HE[parseInt(lm)-1]} ${ly}</strong> (עדכני): ${lv.toFixed(1)} נקודות<br>
-         שיעור הצמדה: <strong>${pctChange>=0?'+':''}${pctChange.toFixed(2)}%</strong>`;
+         שיעור הצמדה: <strong>${pctChange >= 0 ? '+' : ''}${pctChange.toFixed(2)}%</strong>`;
     }
   }
+
   document.getElementById('stat-original').textContent = fmt(total);
   document.getElementById('stat-indexed').textContent = fmt(adjusted);
-  document.getElementById('stat-pct').textContent = useIndex?(pctChange>=0?'+':'')+pctChange.toFixed(1)+'%':'—';
+  document.getElementById('stat-pct').textContent = useIndex ? (pctChange >= 0 ? '+' : '') + pctChange.toFixed(1) + '%' : '—';
+
+  renderPastCards();
 
   const list = document.getElementById('results-list');
-  list.innerHTML='';
+  list.innerHTML = '';
 
-  function share(fam){return mode==='equal'?adjusted/7:(fam==='n'?adjusted/8:adjusted/6);}
+  function share(fam) {
+    return mode === 'equal' ? adjusted / 7 : (fam === 'n' ? adjusted / 8 : adjusted / 6);
+  }
 
-  function renderGroup(members,fam,label,badgeClass){
-    const gl=document.createElement('div');
-    gl.className='group-label';
-    gl.innerHTML=`<span class="badge ${badgeClass}">${label}</span>`;
+  function renderGroup(members, fam, label, badgeClass) {
+    const gl = document.createElement('div');
+    gl.className = 'group-label';
+    gl.innerHTML = `<span class="badge ${badgeClass}">${label}</span>`;
     list.appendChild(gl);
-    members.forEach(m=>{
-      const base=share(fam), final=base-(m.past||0);
-      const pct=(mode==='equal'?(100/7):(fam==='n'?12.5:100/6)).toFixed(2).replace(/\.?0+$/,'');
-      const row=document.createElement('div');
-      row.className='result-row';
-      row.innerHTML=`
+
+    members.forEach(m => {
+      const base = share(fam);
+      const past = indexedPast(m);
+      const final = base - past;
+      const pctNum = mode === 'equal' ? (100/7) : (fam === 'n' ? 12.5 : 100/6);
+      const pct = pctNum.toFixed(2).replace(/\.?0+$/, '');
+
+      let detailParts = [`${pct}% מהסכום`];
+      if (past > 0) detailParts.push(`קיזוז מוצמד: ${fmt(past)}`);
+      if (m.nominalPast && m.year) detailParts.push(`(נומינלי ${fmt(m.nominalPast)}, ${m.year})`);
+
+      const row = document.createElement('div');
+      row.className = 'result-row';
+      row.innerHTML = `
         <div>
-          <div class="member-name">${m.name}</div>
-          <div class="member-detail">${pct}%${m.past?' · קיזוז '+fmt(m.past):''}</div>
+          <div class="r-name">${m.name}</div>
+          <div class="r-detail">${detailParts.join(' · ')}</div>
         </div>
         <div style="text-align:left;">
-          <div class="${final>=0?'amount-positive':'amount-negative'}">${fmt(final)}</div>
-          ${m.past?`<div class="subtotal">לפני קיזוז: ${fmt(base)}</div>`:''}
-        </div>`;
+          <div class="${final >= 0 ? 'amount-positive' : 'amount-negative'}">${fmt(final)}</div>
+          ${past > 0 ? `<div class="subtotal">לפני קיזוז: ${fmt(base)}</div>` : ''}
+        </div>
+      `;
       list.appendChild(row);
     });
   }
 
-  renderGroup(familyN,'n',"משפחת נ'",'badge-n');
-  renderGroup(familyA,'a',"משפחת א'",'badge-a');
+  renderGroup(familyN, 'n', "משפחת נ'", 'badge-n');
+  renderGroup(familyA, 'a', "משפחת א'", 'badge-a');
 
-  const allTotal = [...familyN.map(m=>share('n')-(m.past||0)),...familyA.map(m=>share('a')-(m.past||0))].reduce((a,b)=>a+b,0);
-  const tr=document.createElement('div');
-  tr.className='total-row';
-  tr.innerHTML=`<span class="total-label">סה"כ לחלוקה (לאחר קיזוז)</span><span class="total-value">${fmt(allTotal)}</span>`;
+  const allTotal = [
+    ...familyN.map(m => share('n') - indexedPast(m)),
+    ...familyA.map(m => share('a') - indexedPast(m))
+  ].reduce((a,b) => a+b, 0);
+
+  const tr = document.createElement('div');
+  tr.className = 'total-row';
+  tr.innerHTML = `<span class="total-label">סה"כ לחלוקה (לאחר קיזוז)</span><span class="total-value">${fmt(allTotal)}</span>`;
   list.appendChild(tr);
 }
 
 buildMonthSelect();
-renderPastInputs();
 calculate();
 </script>
 </body>
