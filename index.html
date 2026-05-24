@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>מחשבון חלוקת כספים משפחתי</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght=400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Heebo', sans-serif; background: #fdfbf7; color: #333; min-height: 100vh; padding: 2rem 1rem; line-height: 1.5; }
@@ -69,7 +69,7 @@
   .stat-val { font-size: 18px; font-weight: 700; color: #333; }
 
   /* כרטיס תוצאות סופי */
-  .results-card { background: #f0f7f4; border: 2px solid #cbdcd5; border-radius: 20px; padding: 1.5rem; }
+  .results-card { background: #f0f7f4; border: 2px solid #cbdcd5; border-radius: 20px; padding: 1.5rem; margin-bottom: 1.5rem; }
   .results-headline { font-size: 18px; font-weight: 700; color: #2d4a3e; margin-bottom: 1rem; border-bottom: 1px solid #cbdcd5; padding-bottom: 0.5rem; }
   
   .res-group-title { font-size: 13px; font-weight: 700; color: #718b7e; text-transform: uppercase; margin: 16px 0 8px 0; display: flex; align-items: center; gap: 6px; }
@@ -81,6 +81,20 @@
   .res-pct { font-size: 13px; color: #617d70; font-weight: 500; margin-top: 1px; }
 
   .negative-alert { color: #c53030 !important; }
+
+  /* כפתור שמירה ואזור תרחישים */
+  .scenario-trigger { display: flex; justify-content: center; margin-bottom: 1.5rem; }
+  .btn-scenario { background: #4a6b5d; color: #fff; border: none; border-radius: 12px; padding: 12px 24px; font-family: 'Heebo', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(74,107,93,0.15); transition: background 0.2s; }
+  .btn-scenario:hover { background: #395448; }
+
+  .table-responsive { width: 100%; overflow-x: auto; margin-top: 10px; }
+  .compare-table { width: 100%; border-collapse: collapse; text-align: right; font-size: 14px; }
+  .compare-table th, .compare-table td { padding: 12px; border-bottom: 1px solid #eef2f0; white-space: nowrap; }
+  .compare-table th { background: #f4f8f6; color: #4a6b5d; font-weight: 600; }
+  .compare-table td { background: #fff; }
+  .th-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .btn-delete-scen { background: none; border: none; color: #c53030; cursor: pointer; font-size: 12px; }
+  .btn-delete-scen:hover { text-decoration: underline; }
 
   .footer { text-align: center; font-size: 12px; color: #a0aec0; margin-top: 2rem; padding-bottom: 2rem; }
 
@@ -175,29 +189,34 @@
     <div id="final-results-container"></div>
   </div>
 
+  <div class="scenario-trigger">
+    <button class="btn-scenario" onclick="saveCurrentScenario()">💾 שמור תרחיש זה להשוואה</button>
+  </div>
+
+  <div class="card" id="comparison-card" style="display: none; border-color: #a3c2b5;">
+    <div class="card-title" style="color: #2d4a3e;">📊 טבלת השוואה בין המודלים השמורים</div>
+    <div class="table-responsive">
+      <table class="compare-table">
+        <thead>
+          <tr id="table-header-row">
+            <th>שם בן משפחה</th>
+          </tr>
+        </thead>
+        <tbody id="table-body-rows">
+          </tbody>
+      </table>
+    </div>
+  </div>
+
   <footer class="footer">
     <p>מחשבון חלוקה משפחתי · נתוני מדד בסיס ממוצע 2024=100 (מעודכן לאפריל 2025)</p>
   </footer>
 </div>
 
 <script>
-// נתוני מדד המחירים לצרכן ההיסטוריים (לפי ממוצע שנתי / ינואר של אותה שנה, מעודכן לאפריל 2025 שעומד על 102.8)
-const CPI_DATA = {
-  2010: 65.2,
-  2015: 71.7,
-  2016: 71.4,
-  2018: 72.7,
-  2019: 73.5,
-  2020: 87.6,
-  2021: 90.2,
-  2022: 96.5,
-  2023: 99.2,
-  2024: 100.0,
-  2025: 102.8
-};
+const CPI_DATA = { 2010: 65.2, 2015: 71.7, 2016: 71.4, 2018: 72.7, 2019: 73.5, 2024: 100.0, 2025: 102.8 };
 const LATEST_CPI = 102.8;
 
-// מבנה הנתונים הראשי של בני המשפחה
 let familyData = {
   oof: [
     { id: 'sivan', name: 'סיון', past: [] },
@@ -212,48 +231,34 @@ let familyData = {
   ]
 };
 
-// משתני מצב של האפשרויות במחשבון
-let currentDistributionMode = 'equal'; // או 'weighted'
+let currentDistributionMode = 'equal';
 let currentIndexMode = false;
 let currentBalanceMode = true;
 
-// פונקציות עיצוב מספרים עם פסיקים
-function formatNumber(num) {
-  return Math.round(num).toLocaleString('he-IL');
-}
+// מערך לאחסון התרחישים שהמשתמש שומר
+let savedScenarios = [];
+// אובייקט זמני שמחזיק את תוצאות החישוב הנוכחי לצורך שמירה קלה
+let activeCalculationsCache = {};
 
-function parseFormattedNumber(str) {
-  return parseFloat(str.replace(/,/g, '')) || 0;
-}
+function formatNumber(num) { return Math.round(num).toLocaleString('he-IL'); }
+function parseFormattedNumber(str) { return parseFloat(str.replace(/,/g, '')) || 0; }
 
 function handleMainAmountInput(input) {
   let cursorPosition = input.selectionStart;
   let originalLength = input.value.length;
   let cleanValue = input.value.replace(/[^0-9]/g, '');
-  
-  if (cleanValue === '') {
-    input.value = '';
-    calculateAll();
-    return;
-  }
-  
+  if (cleanValue === '') { input.value = ''; calculateAll(); return; }
   let formatted = parseInt(cleanValue, 10).toLocaleString('he-IL');
   input.value = formatted;
-  
-  // שמירה על מיקום הסמן
   input.selectionStart = input.selectionEnd = cursorPosition + (formatted.length - originalLength);
   calculateAll();
 }
 
-// פונקציה חיה המפרמטת גם את שדות הוספת הסכומים הקטנים
 function formatLiveInput(input) {
   let clean = input.value.replace(/[^0-9]/g, '');
-  if(clean) {
-    input.value = parseInt(clean, 10).toLocaleString('he-IL');
-  }
+  if(clean) input.value = parseInt(clean, 10).toLocaleString('he-IL');
 }
 
-// פונקציות לשינוי מצבי הבחירה (Toggles)
 function setDistributionMode(mode) {
   currentDistributionMode = mode;
   document.getElementById('mode-equal').classList.toggle('active', mode === 'equal');
@@ -275,45 +280,30 @@ function setBalanceMode(isBalanced) {
   calculateAll();
 }
 
-// חישוב ערך מוצמד של פריט כסף בודד
 function getEffectiveAmount(pastItem) {
   if (!currentIndexMode) return pastItem.amount;
   let baseCpi = CPI_DATA[pastItem.year] || LATEST_CPI;
   return pastItem.amount * (LATEST_CPI / baseCpi);
 }
 
-// הוספת שורת כסף עבר חדשה לבן משפחה
 function addPastRecord(famKey, memberId) {
   const amInput = document.getElementById(`add-amount-${memberId}`);
   const yrInput = document.getElementById(`add-year-${memberId}`);
-  
   const amount = parseFormattedNumber(amInput.value);
   const year = parseInt(yrInput.value);
-  
-  if (!amount || !year || year < 2000 || year > 2026) {
-    alert("אנא הזן סכום תקין ושנה הגיונית (בין 2000 ל-2026)");
-    return;
-  }
-  
+  if (!amount || !year || year < 2000 || year > 2026) { alert("אנא הזן סכום תקין ושנה הגיונית"); return; }
   let member = familyData[famKey].find(m => m.id === memberId);
-  if (member) {
-    member.past.push({ amount: amount, year: year });
-    amInput.value = '';
-    calculateAll();
-  }
+  if (member) { member.past.push({ amount: amount, year: year }); amInput.value = ''; calculateAll(); }
 }
 
-// בנייה ורינדור של כרטיסי כספי העבר על המסך
 function renderFamilyInputs() {
   ['oof', 'salimi'].forEach(famKey => {
     const container = document.getElementById(`members-${famKey}-container`);
     container.innerHTML = '';
-    
     familyData[famKey].forEach(member => {
       let html = `<div class="member-box">`;
       html += `<div class="member-header"><span>${member.name}</span></div>`;
       html += `<div class="past-records-list">`;
-      
       if (member.past.length === 0) {
         html += `<div style="font-size: 12px; color: #aaa; font-style: italic;">אין כספי עבר מוזנים</div>`;
       } else {
@@ -324,81 +314,48 @@ function renderFamilyInputs() {
             let change = (((LATEST_CPI / (CPI_DATA[item.year] || LATEST_CPI)) - 1) * 100).toFixed(1);
             indexText = `<span class="rec-indexed">(מוצמד: ₪${formatNumber(effective)} / +${change}%)</span>`;
           }
-          html += `
-            <div class="past-record-item">
-              <span class="rec-amount">₪${formatNumber(item.amount)}</span>
-              <span class="rec-year">שנת ${item.year}</span>
-              ${indexText}
-            </div>`;
+          html += `<div class="past-record-item"><span class="rec-amount">₪${formatNumber(item.amount)}</span> <span class="rec-year">שנת ${item.year}</span> ${indexText}</div>`;
         });
       }
-      
-      html += `</div>`; // סגירת רשימה
-      
-      // טופס הוספה קטן
+      html += `</div>`;
       html += `
         <div class="add-rec-form">
           <input type="text" id="add-amount-${member.id}" placeholder="סכום בש״ח" oninput="formatLiveInput(this)">
           <select id="add-year-${member.id}">
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-            <option value="2022">2022</option>
-            <option value="2021">2021</option>
-            <option value="2020">2020</option>
-            <option value="2019">2019</option>
-            <option value="2018">2018</option>
-            <option value="2017">2017</option>
-            <option value="2016">2016</option>
-            <option value="2015">2015</option>
-            <option value="2010">2010</option>
+            <option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option><option value="2019">2019</option><option value="2018">2018</option><option value="2017">2017</option><option value="2016">2016</option><option value="2015">2015</option><option value="2010">2010</option>
           </select>
           <button class="btn-add" onclick="addPastRecord('${famKey}', '${member.id}')">הוסף</button>
-        </div>
-      `;
-      
-      html += `</div>`; // סגירת קופסת חבר
+        </div>`;
+      html += `</div>`;
       container.innerHTML += html;
     });
   });
 }
 
-// פונקציית החישוב הראשית והצגת הפלט
 function calculateAll() {
   const currentTotalAvailable = parseFormattedNumber(document.getElementById('mainAmountInput').value);
-  
-  // 1. חישוב סך כספי העבר (הנומינליים או המוצמדים בהתאם למצב)
   let globalPastSum = 0;
   let memberPastSumsMap = {};
   
   ['oof', 'salimi'].forEach(famKey => {
     familyData[famKey].forEach(member => {
       let totalForMember = 0;
-      member.past.forEach(item => {
-        totalForMember += getEffectiveAmount(item);
-      });
+      member.past.forEach(item => { totalForMember += getEffectiveAmount(item); });
       memberPastSumsMap[member.id] = totalForMember;
       globalPastSum += totalForMember;
     });
   });
 
-  // עדכון ריבוע הסטטיסטיקה שמתחת להגדרות
   document.getElementById('summary-past-total').textContent = currentBalanceMode ? `₪${formatNumber(globalPastSum)}` : "₪0 (מנוטרל)";
-  
-  // 2. קביעת גודל המאגר הסופי לחלוקה
-  // במידה ואיזון יורשים פועל -> המאגר גדל בכספי העבר. אם לא -> נשאר בדיוק סכום הקופה המקורי.
   let combinedPool = currentTotalAvailable;
-  if (currentBalanceMode) {
-    combinedPool += globalPastSum;
-  }
+  if (currentBalanceMode) combinedPool += globalPastSum;
   document.getElementById('summary-combined-pool').textContent = `₪${formatNumber(combinedPool)}`;
 
-  // תמיד נרנדר מחדש את כרטיסי כספי העבר כדי לשקף הצמדות אם השתנו
   renderFamilyInputs();
 
-  // 3. חישוב החלק של כל אדם ורינדור תוצאות סופיות
   const resultsContainer = document.getElementById('final-results-container');
   resultsContainer.innerHTML = '';
+  activeCalculationsCache = {};
 
   const familiesConfig = [
     { key: 'oof', name: "משפחת עוף", class: 'badge-oof' },
@@ -412,44 +369,30 @@ function calculateAll() {
     resultsContainer.appendChild(groupTitle);
 
     familyData[fam.key].forEach(member => {
-      // אחוז וחלוקה ברוטו מהמאגר
       let grossAmount = 0;
       let distributionDescription = "";
-      
       if (currentDistributionMode === 'equal') {
-        grossAmount = combinedPool / 7; // שביעית לכל נכד
+        grossAmount = combinedPool / 7;
         distributionDescription = "⅐ מהמאגר";
       } else {
-        if (fam.key === 'oof') {
-          grossAmount = combinedPool / 8; // שמינית למשפחת עוף
-          distributionDescription = "⅛ מהמאגר";
-        } else {
-          grossAmount = combinedPool / 6; // שישית למשפחת סלימי
-          distributionDescription = "⅙ מהמאגר";
-        }
+        grossAmount = fam.key === 'oof' ? combinedPool / 8 : combinedPool / 6;
+        distributionDescription = fam.key === 'oof' ? "⅛ מהמאגר" : "⅙ מהמאגר";
       }
 
-      // חישוב הנטו לקבלה בפועל בקופה הנוכחית
       let netAmount = grossAmount;
-      if (currentBalanceMode) {
-        // מופחת סך כספי העבר שלו (המוחזרים למאגר)
-        netAmount = grossAmount - (memberPastSumsMap[member.id] || 0);
-      }
+      if (currentBalanceMode) netAmount = grossAmount - (memberPastSumsMap[member.id] || 0);
 
-      // חישוב אחוז מתוך סך הכספים הנוכחי בקופה (זה שהוגדר למעלה, ברירת מחדל 5 מיליון)
-      let pctFromCurrentPool = 0;
-      if (currentTotalAvailable > 0) {
-        pctFromCurrentPool = (netAmount / currentTotalAvailable) * 100;
-      }
+      let pctFromCurrentPool = currentTotalAvailable > 0 ? (netAmount / currentTotalAvailable) * 100 : 0;
+      
+      // שמירה בזיכרון המטמון של הריצה הנוכחית
+      activeCalculationsCache[member.id] = netAmount;
 
       let row = document.createElement('div');
       row.className = 'res-row';
-      
       let detailString = `${distributionDescription}`;
       if (currentBalanceMode && (memberPastSumsMap[member.id] || 0) > 0) {
         detailString += ` · לאחר קיזוז עבר בסך ₪${formatNumber(memberPastSumsMap[member.id])}`;
       }
-
       let isNegative = netAmount < 0;
 
       row.innerHTML = `
@@ -458,20 +401,82 @@ function calculateAll() {
           <div class="res-calc-details">${detailString}</div>
         </div>
         <div class="res-values">
-          <div class="res-final-amount ${isNegative ? 'negative-alert' : ''}">
-            ${isNegative ? 'החזר חוב למאגר: ' : ''}₪${formatNumber(Math.abs(netAmount))}
-          </div>
-          <div class="res-pct">${pctFromCurrentPool.toFixed(2)}% מסך הקופה הנוכחית</div>
-        </div>
-      `;
+          <div class="res-final-amount ${isNegative ? 'negative-alert' : ''}">${isNegative ? 'החזר חוב: ' : ''}₪${formatNumber(Math.abs(netAmount))}</div>
+          <div class="res-pct">${pctFromCurrentPool.toFixed(2)}% מסך הקופה</div>
+        </div>`;
       resultsContainer.appendChild(row);
     });
   });
 }
 
-// הרצה ראשונית עם טעינת הדף
+// פונקציה לשמירת המצב הנוכחי לתוך מערך ההשוואה
+function saveCurrentScenario() {
+  let scenarioName = prompt("הזינו שם עבור התרחיש שאתם שומרים:\n(לדוגמה: 'חלוקה שוויונית עם מדד')");
+  if (!scenarioName || scenarioName.trim() === "") return;
+
+  savedScenarios.push({
+    id: Date.now(),
+    name: scenarioName.trim(),
+    data: { ...activeCalculationsCache }
+  });
+
+  renderComparisonTable();
+}
+
+// מחיקת תרחיש שנשמר
+function deleteScenario(id) {
+  savedScenarios = savedScenarios.filter(scen => scen.id !== id);
+  renderComparisonTable();
+}
+
+// בנייה ועדכון של טבלת ההשוואה התחתונה
+function renderComparisonTable() {
+  const card = document.getElementById('comparison-card');
+  const headerRow = document.getElementById('table-header-row');
+  const bodyRows = document.getElementById('table-body-rows');
+
+  // אם אין תרחישים שמורים, נסתיר את הכרטיס ונסיים
+  if (savedScenarios.length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+
+  // הצגת הכרטיס
+  card.style.display = 'block';
+
+  // ניקוי ובניית כותרות הטבלה (עמודת שם + עמודה לכל תרחיש)
+  headerRow.innerHTML = '<th>שם בן משפחה</th>';
+  savedScenarios.forEach(scen => {
+    headerRow.innerHTML += `
+      <th>
+        <div class="th-actions">
+          <span>${scen.name}</span>
+          <button class="btn-delete-scen" onclick="deleteScenario(${scen.id})">❌</button>
+        </div>
+      </th>`;
+  });
+
+  // בניית שורות בני המשפחה
+  bodyRows.innerHTML = '';
+  const allMembers = [...familyData.oof, ...familyData.salimi];
+
+  allMembers.forEach(member => {
+    let rowHtml = `<tr><td><strong>${member.name}</strong></td>`;
+    
+    savedScenarios.forEach(scen => {
+      let val = scen.data[member.id] || 0;
+      let isNegative = val < 0;
+      rowHtml += `<td class="${isNegative ? 'negative-alert' : ''}" style="font-weight: 500;">
+        ${isNegative ? '-' : ''}₪${formatNumber(Math.abs(val))}
+      </td>`;
+    });
+
+    rowHtml += '</tr>';
+    bodyRows.innerHTML += rowHtml;
+  });
+}
+
 calculateAll();
 </script>
-
 </body>
 </html>
