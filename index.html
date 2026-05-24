@@ -17,7 +17,7 @@
   .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .row:last-child { margin-bottom: 0; }
   label { font-size: 14px; color: #666; min-width: 140px; }
-  input[type=number], input[type=text], select {
+  input[type=text], select {
     border: 0.5px solid #d0d0c8; border-radius: 8px; padding: 8px 12px;
     font-size: 14px; font-family: 'Heebo', sans-serif; background: #fafaf8;
     color: #1a1a1a; outline: none; transition: border-color 0.15s; width: 100%;
@@ -110,7 +110,7 @@
     <div class="row">
       <label>סך הכספים הנוכחי</label>
       <div class="amount-wrap">
-        <input type="number" id="totalAmount" value="5000000" min="0" step="10000" oninput="calculate()" />
+        <input type="text" id="totalAmount" value="5,000,000" oninput="handleAmountInput(this)" />
         <span class="currency">₪</span>
       </div>
     </div>
@@ -166,7 +166,7 @@
         <div id="members-a"></div>
       </div>
     </div>
-    <p style="font-size:12px;color:#aaa;margin-top:10px;">במצב "עם קיזוז", כספי העבר מתווספים למאגר ומתחלקים מחדש. במצב "ללא קיזוז" הם מוצגים בלבד.</p>
+    <p style="font-size:12px;color:#aaa;margin-top:10px;">במצב "עם קיזוז", כספי העבר מתותווספים למאגר ומתחלקים מחדש. במצב "ללא קיזוז" הם מוצגים בלבד.</p>
   </div>
 
   <div class="summary-bar">
@@ -218,260 +218,4 @@ const CPI_MONTHLY = {
   '2015-01':71.8,'2016-01':71.5,'2017-01':71.9,'2018-01':72.8,'2019-01':73.6,
   '2020-01':88.1,'2020-02':87.9,'2020-03':87.7,'2020-04':87.3,'2020-05':87.1,'2020-06':87.2,
   '2020-07':87.5,'2020-08':87.7,'2020-09':87.9,'2020-10':87.6,'2020-11':87.4,'2020-12':87.6,
-  '2021-01':87.9,'2021-02':88.1,'2021-03':88.5,'2021-04':89.3,'2021-05':89.6,'2021-06':90.1,
-  '2021-07':90.5,'2021-08':90.8,'2021-09':91.2,'2021-10':91.6,'2021-11':92.0,'2021-12':92.5,
-  '2022-01':93.1,'2022-02':93.5,'2022-03':94.3,'2022-04':96.0,'2022-05':96.7,'2022-06':97.2,
-  '2022-07':97.4,'2022-08':97.5,'2022-09':97.8,'2022-10':97.9,'2022-11':97.8,'2022-12':97.9,
-  '2023-01':98.1,'2023-02':98.5,'2023-03':99.3,'2023-04':99.2,'2023-05':99.3,'2023-06':99.2,
-  '2023-07':99.3,'2023-08':99.6,'2023-09':100.0,'2023-10':99.5,'2023-11':99.2,'2023-12':99.1,
-  '2024-01':97.9,'2024-02':98.2,'2024-03':98.8,'2024-04':99.5,'2024-05':99.7,'2024-06':99.8,
-  '2024-07':99.9,'2024-08':100.4,'2024-09':100.4,'2024-10':100.5,'2024-11':101.1,'2024-12':101.2,
-  '2025-01':101.3,'2025-02':101.5,'2025-03':101.7,'2025-04':102.8
-};
-
-const CPI_YEAR_AVG = {
-  2010:65.2, 2011:67.5, 2012:70.0, 2013:71.4, 2014:72.2,
-  2015:71.7, 2016:71.4, 2017:71.8, 2018:72.7, 2019:73.5,
-  2020:87.6, 2021:90.2, 2022:96.5, 2023:99.2, 2024:100.0
-};
-
-const MONTHS_HE = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-
-const familyN = [
-  { id:'gal',   name:'גל',   year:2015, nominalPast:300000  },
-  { id:'shir',  name:'שיר',  year:2018, nominalPast:1000000 },
-  { id:'noga',  name:'נוגה', year:2019, nominalPast:750000  },
-  { id:'sivan', name:'סיון', year:null, nominalPast:0       },
-];
-const familyA = [
-  { id:'yael', name:'יעל', year:2010, nominalPast:300000  },
-  { id:'eyal', name:'איל', year:2016, nominalPast:500000  },
-  { id:'adi',  name:'עדי', year:2018, nominalPast:1000000 },
-];
-
-let mode = 'equal', useIndex = false, applyOffset = true;
-let savedScenarios = [];
-let currentResultsMap = {}; // לשמירת חישובים מהירים לצורך השוואה
-
-function getLatestKey() { return Object.keys(CPI_MONTHLY).sort().pop(); }
-function getLatestVal() { return CPI_MONTHLY[getLatestKey()]; }
-
-function getCpiForYear(year) {
-  if (CPI_YEAR_AVG[year]) return CPI_YEAR_AVG[year];
-  const k = year + '-01';
-  return CPI_MONTHLY[k] || null;
-}
-
-function indexedPast(m) {
-  if (!m.nominalPast || !m.year) return m.nominalPast || 0;
-  const base = getCpiForYear(m.year);
-  const current = getLatestVal();
-  if (!base || !current) return m.nominalPast;
-  return m.nominalPast * (current / base);
-}
-
-function fmt(n) {
-  return '₪' + Math.round(n).toLocaleString('he-IL');
-}
-
-function buildMonthSelect() {
-  const sel = document.getElementById('baseMonth');
-  Object.keys(CPI_MONTHLY).sort().reverse().forEach(k => {
-    const [y,m] = k.split('-');
-    const opt = document.createElement('option');
-    opt.value = k;
-    opt.textContent = MONTHS_HE[parseInt(m)-1] + ' ' + y;
-    sel.appendChild(opt);
-  });
-  sel.value = '2024-01';
-}
-
-function renderPastCards() {
-  [['n', familyN], ['a', familyA]].forEach(([fam, list]) => {
-    const el = document.getElementById('members-' + fam);
-    el.innerHTML = '';
-    list.forEach(m => {
-      const idx = indexedPast(m);
-      const d = document.createElement('div');
-      d.className = 'member-row';
-      let detail = '';
-      if (m.nominalPast && m.year) {
-        const base = getCpiForYear(m.year);
-        const cur = getLatestVal();
-        const pct = ((cur/base - 1)*100).toFixed(1);
-        detail = `<div class="member-indexed" style="${!applyOffset ? 'text-decoration: line-through; opacity: 0.5;' : ''}">נומינלי: ${fmt(m.nominalPast)} (${m.year}) · הצמדה: +${pct}%<br>מוצמד: ${fmt(idx)}</div>`;
-      } else if (!m.nominalPast) {
-        detail = `<div class="member-indexed">אין כספי עבר</div>`;
-      }
-      d.innerHTML = `
-        <div class="member-top" style="${!applyOffset ? 'opacity: 0.6;' : ''}">
-          <span class="member-name-label">${m.name}</span>
-          <span class="past-amount">${m.nominalPast ? fmt(idx) : '—'}</span>
-        </div>
-        ${detail}
-      `;
-      el.appendChild(d);
-    });
-  });
-}
-
-function setMode(m) {
-  mode = m;
-  document.getElementById('btn-equal').className = 'toggle-btn' + (m==='equal' ? ' active' : '');
-  document.getElementById('btn-weighted').className = 'toggle-btn' + (m==='weighted' ? ' active' : '');
-  calculate();
-}
-
-function setIndex(v) {
-  useIndex = v;
-  document.getElementById('btn-no-index').className = 'toggle-btn' + (!v ? ' active' : '');
-  document.getElementById('btn-yes-index').className = 'toggle-btn' + (v ? ' active' : '');
-  document.getElementById('index-section').style.display = v ? '' : 'none';
-  calculate();
-}
-
-function setOffsetMode(v) {
-  applyOffset = v;
-  document.getElementById('btn-offset-yes').className = 'toggle-btn' + (v ? ' active' : '');
-  document.getElementById('btn-offset-no').className = 'toggle-btn' + (!v ? ' active' : '');
-  calculate();
-}
-
-function calculate() {
-  const total = parseFloat(document.getElementById('totalAmount').value) || 0;
-  let baseIndexedPool = total;
-
-  if (useIndex) {
-    const bk = document.getElementById('baseMonth').value;
-    const lk = getLatestKey();
-    const bv = CPI_MONTHLY[bk], lv = CPI_MONTHLY[lk];
-    if (bv && lv) {
-      baseIndexedPool = total * (lv / bv);
-      const [by,bm] = bk.split('-'), [ly,lm] = lk.split('-');
-      const pctChange = ((lv / bv) - 1) * 100;
-      document.getElementById('index-info').innerHTML =
-        `מדד <strong>${MONTHS_HE[parseInt(bm)-1]} ${by}</strong>: ${bv.toFixed(1)} נקודות<br>
-         מדד <strong>${MONTHS_HE[parseInt(lm)-1]} ${ly}</strong> (עדכני): ${lv.toFixed(1)} נקודות<br>
-         שיעור הצמדה: <strong>${pctChange >= 0 ? '+' : ''}${pctChange.toFixed(2)}%</strong>`;
-    }
-  }
-
-  // חישוב סך כספי העבר המוצמדים
-  let totalPastFunds = 0;
-  if (applyOffset) {
-    [...familyN, ...familyA].forEach(m => {
-      totalPastFunds += indexedPast(m);
-    });
-  }
-
-  // המאגר המשותף הסופי לחלוקה
-  const finalDistributionPool = baseIndexedPool + totalPastFunds;
-
-  document.getElementById('stat-indexed').textContent = fmt(baseIndexedPool);
-  document.getElementById('stat-past-total').textContent = applyOffset ? fmt(totalPastFunds) : fmt(0);
-  document.getElementById('stat-final-pool').textContent = fmt(finalDistributionPool);
-
-  renderPastCards();
-
-  const list = document.getElementById('results-list');
-  list.innerHTML = '';
-  currentResultsMap = {}; // איפוס מפת התוצאות לטובת מנגנון ההשוואה
-
-  function getShare(fam, pool) {
-    return mode === 'equal' ? pool / 7 : (fam === 'n' ? pool / 8 : pool / 6);
-  }
-
-  function renderGroup(members, fam, label, badgeClass) {
-    const gl = document.createElement('div');
-    gl.className = 'group-label';
-    gl.innerHTML = `<span class="badge ${badgeClass}">${label}</span>`;
-    list.appendChild(gl);
-
-    members.forEach(m => {
-      const grossShare = getShare(fam, finalDistributionPool); 
-      const past = applyOffset ? indexedPast(m) : 0;
-      const finalNetShare = grossShare - past; // החלק היחסי פחות מה שכבר קיבל
-
-      // שמירה לצורך ההשוואות
-      currentResultsMap[m.id] = finalNetShare;
-
-      const pctNum = mode === 'equal' ? (100/7) : (fam === 'n' ? 12.5 : 100/6);
-      const pct = pctNum.toFixed(2).replace(/\.?0+$/, '');
-
-      let detailParts = [`${pct}% מהמאגר המוגדל`];
-      if (past > 0 && applyOffset) detailParts.push(`החזר/קיזוז עבר מוצמד: ${fmt(past)}`);
-
-      const row = document.createElement('div');
-      row.className = 'result-row';
-      row.innerHTML = `
-        <div>
-          <div class="r-name">${m.name}</div>
-          <div class="r-detail">${detailParts.join(' · ')}</div>
-        </div>
-        <div style="text-align:left;">
-          <div class="${finalNetShare >= 0 ? 'amount-positive' : 'amount-negative'}">${fmt(finalNetShare)}</div>
-          ${past > 0 && applyOffset ? `<div class="subtotal">ברוטו לפני החזר: ${fmt(grossShare)}</div>` : ''}
-        </div>
-      `;
-      list.appendChild(row);
-    });
-  }
-
-  renderGroup(familyN, 'n', "משפחת נ'", 'badge-n');
-  renderGroup(familyA, 'a', "משפחת א'", 'badge-a');
-
-  // חישוב שורה תחתונה לבדיקת שלמות החלוקה
-  const sumOfDistributedMoney = [...familyN, ...familyA].map(m => {
-    const past = applyOffset ? indexedPast(m) : 0;
-    return getShare(m.id in familyN.reduce((acc, curr) => ({...acc, [curr.id]: true}), {}) ? 'n' : 'a', finalDistributionPool) - past;
-  }).reduce((a,b)=>a+b, 0);
-
-  const tr = document.createElement('div');
-  tr.className = 'total-row';
-  // במודל החדש, סך כל חלוקת הנטו שווה בדיוק לסכום המקורי/המוצמד הקיים כרגע בקופה!
-  tr.innerHTML = `<span class="total-label">סה"כ לחלוקה בפועל (מתוך המאגר המקורי)</span><span class="total-value">${fmt(baseIndexedPool)}</span>`;
-  list.appendChild(tr);
-}
-
-// פונקציות לניהול והשוואת תרחישים
-function saveScenario() {
-  const scenarioName = prompt("הזינו שם לתרחיש הנוכחי (לדוגמה: 'חלוקה שוויונית עם קיזוז', 'לפי משפחה בלי מדד'):");
-  if (!scenarioName) return;
-
-  const currentScenario = {
-    id: Date.now(),
-    name: scenarioName,
-    values: { ...currentResultsMap }
-  };
-
-  savedScenarios.push(currentScenario);
-  updateCompareTable();
-}
-
-function deleteScenario(id) {
-  savedScenarios = savedScenarios.filter(s => s.id !== id);
-  updateCompareTable();
-}
-
-function updateCompareTable() {
-  const section = document.getElementById('scenarios-section');
-  if (savedScenarios.length === 0) {
-    section.style.display = 'none';
-    return;
-  }
-  section.style.display = 'block';
-
-  const headerRow = document.getElementById('compare-header');
-  const tbody = document.getElementById('compare-body');
-
-  // בניית כותרות הטבלה
-  headerRow.innerHTML = '<th>שם / בן משפחה</th>';
-  savedScenarios.forEach(s => {
-    const th = document.createElement('th');
-    th.innerHTML = `${s.name} <button class="delete-scen" onclick="deleteScenario(${s.id})">❌</button>`;
-    headerRow.appendChild(th);
-  });
-
-  // בניית שורות לפי האנשים
-  tbody.innerHTML = '';
-  const allMembers = [...familyN, ...familyA];
+  '2021-01':87.9,'2021-02':88.1,'2021-03':88.5,'2021-04':89.3,'2021-05':89.6,'2021-06':90
